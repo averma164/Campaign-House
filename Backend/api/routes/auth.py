@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.db.database import get_session
-from app.models.user import User
-from app.schemas.user import UserCreate, UserLogin, Token, UserResponse
-from app.core.security import hash_password, verify_password, create_access_token
+from db.database import get_session
+from models.user import User
+from schemas.user import UserCreate, UserLogin, Token, UserResponse
+from core.security import hash_password, verify_password, create_access_token
 
 router = APIRouter()
 

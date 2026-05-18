@@ -1,18 +1,16 @@
 from fastapi import APIRouter, Depends, Query, Request, HTTPException
 from sqlmodel import Session, select
 
-from app.db.database import get_session
-from app.models.campaign import Campaign
-from app.models.user import User
-from app.schemas.campaign import CampaignCreate
-from app.schemas.common import Response, PaginatedResponse
-from app.utils.pagination import encode_cursor, decode_cursor
-from app.api.deps import get_current_user
+from db.database import get_session
+from models.campaign import Campaign
+from models.user import User
+from schemas.campaign import CampaignCreate
+from schemas.common import Response, PaginatedResponse
+from utils.pagination import encode_cursor, decode_cursor
+from api.deps import get_current_user
 
 router = APIRouter()
 
-
-# ✅ GET all campaigns (paginated)
 @router.get("", response_model=PaginatedResponse[list[Campaign]])
 def read_campaigns(
     request: Request,
@@ -45,7 +43,7 @@ def read_campaigns(
     }
 
 
-# ✅ GET single campaign
+
 @router.get("/{id}", response_model=Response[Campaign])
 def get_campaign(
     id: int,
@@ -60,7 +58,6 @@ def get_campaign(
     return {"data": data}
 
 
-# ✅ CREATE campaign
 @router.post("", status_code=201, response_model=Response[Campaign])
 def create_campaign(
     campaign: CampaignCreate,
@@ -76,7 +73,6 @@ def create_campaign(
     return {"data": db}
 
 
-# ✅ UPDATE campaign
 @router.put("/{id}", response_model=Response[Campaign])
 def update_campaign(
     id: int,
@@ -99,7 +95,6 @@ def update_campaign(
     return {"data": data}
 
 
-# ✅ DELETE campaign
 @router.delete("/{id}", status_code=204)
 def delete_campaign(
     id: int,

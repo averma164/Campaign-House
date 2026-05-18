@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from app.db.database import create_db_and_tables
-from app.api.routes import campaign, auth
+from db.database import create_db_and_tables
+from api.routes import campaign, auth
 
 
 @asynccontextmanager
@@ -16,7 +16,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # allow all (good for dev)
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,7 +1,10 @@
 from sqlmodel import SQLModel, create_engine, Session
+from core.config import settings
 
-sqlite_url = "sqlite:///database.db"
-engine = create_engine(sqlite_url, connect_args={"check_same_thread": False})
+engine = create_engine(
+    settings.DATABASE_URL,
+    connect_args={"check_same_thread": False}  
+)
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
