@@ -25,7 +25,7 @@ function Login() {
       const data = await res.json();
       localStorage.setItem("token", data.access_token);
 
-      navigate("/"); // ✅ better than window.location
+      navigate("/campaigns"); 
     } catch (err: any) {
       setError(err.message);
     }

@@ -62,3 +62,21 @@
 .about-section li {
   margin-bottom: 8px;
 }
+
+.about-back-button {
+  display: inline-block;
+  margin-bottom: 24px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 999px;
+  background: #6d28d9;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.about-back-button:hover {
+  background: #7c3aed;
+  transform: translateY(-1px);
+}

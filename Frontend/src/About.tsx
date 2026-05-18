@@ -1,6 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import "./About.css";
 
 function About() {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
   return (
     <div className="about-page">
 
@@ -14,6 +18,8 @@ function About() {
 
       {/* Content */}
       <div className="about-content">
+
+        
 
         <div className="about-section">
           <h2>Our Mission</h2>
@@ -42,7 +48,12 @@ function About() {
             <li>Simple and user-friendly platform</li>
           </ul>
         </div>
-
+        <button
+          className="about-back-button"
+          onClick={() => navigate(token ? "/campaigns" : "/")}
+        >
+          Return to Dashboard
+        </button>
       </div>
       <footer>
         © 2026 Aditi Verma All Rights Reserved

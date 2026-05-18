@@ -1,6 +1,7 @@
 /* Page */
 .login-page {
-  background: #faf9ff;
+  background-image: url("../background_About.jpg");
+  /* background: #faf9ff; */
   min-height: 100vh;
   display: flex;
   align-items: center;

@@ -6,6 +6,7 @@ function UpdateCampaign() {
   const { id } = useParams();
   const [name, setName] = useState("");
   const [due_date, setDueDate] = useState("");
+  const navigate = useNavigate();
   
   
   
@@ -13,12 +14,12 @@ function UpdateCampaign() {
     if (!id) return;
     const fetchCampaign = async () => {
       try {
-        const res = await fetch(
-          `http://127.0.0.1:8000/campaings/${id}`,{
-          method: "GET",
-        }
-      );
-
+        const token = localStorage.getItem("token");
+        const res = await fetch(`http://127.0.0.1:8000/campaigns/${id}`, {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        });
         const data = await res.json();
         console.log("Fetched:", data);
 
@@ -38,7 +39,6 @@ function UpdateCampaign() {
     fetchCampaign();
   }, [id]);
 
-  const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -48,22 +48,21 @@ function UpdateCampaign() {
     };
 
     try {
-      const res = await fetch(
-        `http://127.0.0.1:8000/campaings/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://127.0.0.1:8000/campaigns/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify(body),
+      });
 
       const data = await res.json();
       console.log("Update:", data);
 
       alert("Campaign Updated!");
-      navigate("/");
+      navigate("/campaigns");
     } catch (error) {
       console.error("Error updating campaign:", error);
       alert("Update failed!");
@@ -72,7 +71,7 @@ function UpdateCampaign() {
 
   return (
     <div className="maincreate">
-      <Link to={"/"}>
+      <Link to={"/campaigns"}>
         <button className="rbtn">Return</button>
       </Link>
 

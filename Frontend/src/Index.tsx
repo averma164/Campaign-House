@@ -19,7 +19,7 @@ function Index() {
         <h2>Campaign House</h2>
 
         <div className="right">
-          <Link to="/Index">Home</Link>
+          <Link to="/">Home</Link>
           <Link to="/about">About</Link>
         </div>
       </div>
@@ -34,7 +34,7 @@ function Index() {
       </div>
 
       {/* Stats */}
-      <div className="stats">
+      <div className="index-stats">
         <div className="card">
           <p>250+</p>
           <p>Campaigns</p>

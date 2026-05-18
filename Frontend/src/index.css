@@ -100,7 +100,7 @@ body {
 }
 
 /* Stats */
-.stats {
+.index-stats {
   display: flex;
   justify-content: center;
   gap: 80px;
