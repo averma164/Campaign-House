@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
 function Signup() {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,7 +19,7 @@ function Signup() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
@@ -54,16 +53,6 @@ function Signup() {
 
         <form className="login-form" onSubmit={handleSubmit}>
           
-          <div className="input-group">
-            <label>Name</label>
-            <input
-              type="text"
-              placeholder="Enter name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
 
           <div className="input-group">
             <label>Email</label>

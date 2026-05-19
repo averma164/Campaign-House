@@ -6,8 +6,9 @@ load_dotenv()
 class Settings:
     PROJECT_NAME: str = "Campaign House API"
 
- 
-    DATABASE_URL: str = "sqlite:///database.db"
+    DATABASE_URL = "postgresql+psycopg2://postgres:aditi123@localhost:5432/campaign_house"
+
+    # DATABASE_URL: str = "sqlite:///database.db"
 
     SECRET_KEY: str = os.getenv("SECRET_KEY", "supersecretkey")
     ALGORITHM: str = "HS256"
