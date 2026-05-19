@@ -1,3 +1,5 @@
+import datetime
+
 from fastapi import APIRouter, Depends, Query, Request, HTTPException
 from sqlmodel import Session, select
 
@@ -10,6 +12,23 @@ from utils.pagination import encode_cursor, decode_cursor
 from api.deps import get_current_user
 
 router = APIRouter()
+@router.get("/stats")
+def get_campaign_stats(
+    session: Session = Depends(get_session),
+    user: User = Depends(get_current_user)
+):
+    campaigns = session.exec(select(Campaign)).all()
+
+    total = len(campaigns)
+
+    active = len([c for c in campaigns if c.status == "active"])
+    completed = len([c for c in campaigns if c.status == "completed"])
+
+    return {
+        "total": total,
+        "active": active,
+        "completed": completed
+    }
 
 @router.get("", response_model=PaginatedResponse[list[Campaign]])
 def read_campaigns(
@@ -29,6 +48,13 @@ def read_campaigns(
     )
 
     data = session.exec(stmt).all()
+    
+    now = datetime.utcnow()
+    for c in data:
+        if c.due_date and c.due_date < now:
+            c.status = "completed"
+        else:
+            c.status = "active"
 
     base_url = str(request.url).split("?")[0]
     next_url = None
@@ -84,7 +110,9 @@ def update_campaign(
 
     if not data:
         raise HTTPException(status_code=404, detail="Campaign not found")
-
+    
+    data.description = campaign.description
+    data.status = campaign.status if campaign.status else data.status
     data.name = campaign.name
     data.due_date = campaign.due_date
 

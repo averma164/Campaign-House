@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import Column, SQLModel, Field, String
 from datetime import datetime, timezone
 
 class Campaign(SQLModel, table=True):
@@ -6,3 +6,5 @@ class Campaign(SQLModel, table=True):
     name: str
     due_date: datetime | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    description: str | None = None
+    status: str = Column(String, default="active")
