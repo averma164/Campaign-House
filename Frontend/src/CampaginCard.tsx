@@ -5,9 +5,10 @@ type Props = {
   campaign_id: number;
   name: string;
   due_date: string | null;
+  status?: string;
 };
 
-const CampaignCard = ({ campaign_id, name, due_date }: Props) => {
+const CampaignCard = ({ campaign_id, name, due_date, status }: Props) => {
   return (
     <div className="campaign-card">
 
@@ -17,6 +18,7 @@ const CampaignCard = ({ campaign_id, name, due_date }: Props) => {
 
       <div className="card-body">
         <p>🆔 {campaign_id}</p>
+        <p>📊 {status}</p>
         <p>
           📅 {due_date
             ? new Date(due_date).toLocaleDateString()

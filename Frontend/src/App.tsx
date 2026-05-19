@@ -10,6 +10,8 @@ function App() {
   const [nextUrl, setNextUrl] = useState<string | null>(null);
   const [prevStack, setPrevStack] = useState<any[][]>([]);
   const [showAllCampaigns, setShowAllCampaigns] = useState(false);
+  const [stats, setStats] = useState({ total: 0, active: 0, completed: 0 });
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -33,7 +35,33 @@ function App() {
         setNextUrl(data.next || null);
       })
       .catch(() => setCampaigns([]));
+    
+    fetchStats()
+
+    fetch("http://127.0.0.1:8000/campaigns/stats", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setStats(data);
+      })
+      .catch(err => console.error("Stats error:", err));
+
   }, [navigate]);
+
+  const fetchStats = () => {
+    const token = localStorage.getItem("token");
+
+    fetch("http://127.0.0.1:8000/campaigns/stats", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(data => setStats(data));
+  };
 
   const fetchData = async (url: string, isNext = true) => {
     const token = localStorage.getItem("token");
@@ -70,7 +98,7 @@ function App() {
         <aside className="sidebar">
           <h2 className="sidebar-h2"><b>Campaign House</b></h2>
           <nav>
-            
+
             <p className={!showAllCampaigns ? "active" : ""} onClick={() => setShowAllCampaigns(false)}>Dashboard</p>
             <p className={showAllCampaigns ? "active" : ""} onClick={() => setShowAllCampaigns(true)}>Campaigns</p>
             <p>Analytics</p>
@@ -94,9 +122,9 @@ function App() {
 
           {/* STATS */}
           <div className="stats">
-            <div className="stat-card">Total<br /><b>{campaigns.length}</b></div>
-            <div className="stat-card">Active<br /><b>3</b></div>
-            <div className="stat-card">Completed<br /><b>4</b></div>
+            <div className="stat-card">Total<br /><b>{stats.total}</b></div>
+            <div className="stat-card">Active<br /><b>{stats.active}</b></div>
+            <div className="stat-card">Completed<br /><b>{stats.completed}</b></div>
           </div>
 
           {/* CAMPAIGNS */}
@@ -108,6 +136,7 @@ function App() {
                   campaign_id={c.campaign_id}
                   name={c.name}
                   due_date={c.due_date}
+                  status={c.status}
                 />
               ))
             ) : (

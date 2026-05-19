@@ -1,6 +1,6 @@
-import datetime
-
+from datetime import datetime 
 from fastapi import APIRouter, Depends, Query, Request, HTTPException
+from rich import _console
 from sqlmodel import Session, select
 
 from db.database import get_session
@@ -18,11 +18,11 @@ def get_campaign_stats(
     user: User = Depends(get_current_user)
 ):
     campaigns = session.exec(select(Campaign)).all()
-
+    now = datetime.utcnow()
     total = len(campaigns)
 
-    active = len([c for c in campaigns if c.status == "active"])
-    completed = len([c for c in campaigns if c.status == "completed"])
+    active = len([c for c in campaigns if not c.due_date or c.due_date > now])
+    completed = len([c for c in campaigns if c.due_date and c.due_date <= now])
 
     return {
         "total": total,
@@ -115,7 +115,7 @@ def update_campaign(
     data.status = campaign.status if campaign.status else data.status
     data.name = campaign.name
     data.due_date = campaign.due_date
-
+    print(data)
     session.add(data)
     session.commit()
     session.refresh(data)

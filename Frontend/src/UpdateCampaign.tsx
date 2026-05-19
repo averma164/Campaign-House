@@ -6,6 +6,7 @@ function UpdateCampaign() {
   const { id } = useParams();
   const [name, setName] = useState("");
   const [due_date, setDueDate] = useState("");
+  const [description, setDescription] = useState("");
   const navigate = useNavigate();
   
   
@@ -31,6 +32,7 @@ function UpdateCampaign() {
             ? new Date(campaign.due_date).toISOString().slice(0, 16)
             : ""
         );
+        setDescription(campaign.description || ""); 
       } catch (error) {
         console.error("Error fetching campaign:", error);
       }
@@ -45,6 +47,7 @@ function UpdateCampaign() {
     const body = {
       name,
       due_date: due_date || null,
+      description,
     };
 
     try {
@@ -71,12 +74,10 @@ function UpdateCampaign() {
 
   return (
     <div className="maincreate">
-      <Link to={"/campaigns"}>
-        <button className="rbtn">Return</button>
-      </Link>
+      
 
       <div className="form-container">
-        <h2>Update Campaign</h2>
+        <h2>Edit Campaign</h2>
 
         <form onSubmit={handleSubmit} className="form">
           <label>
@@ -101,7 +102,19 @@ function UpdateCampaign() {
           </label>
 
           <br /><br />
-
+          <label>
+            Campaign Description :
+            <input
+              type="textArea"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </label>
+          <br /><br />
+          <Link to={"/campaigns"}>
+          <button className="rbtn">Return</button>
+        </Link>
           <button className="sbtn" type="submit">
             Update
           </button>

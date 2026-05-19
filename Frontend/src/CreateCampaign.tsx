@@ -7,13 +7,15 @@ function CreateCampaign() {
   const [name, setname] = useState("");
   const [due_date, setDue_date] = useState("");
   const navigate = useNavigate();
+  const [description, setDescription] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const body = {
       name,
       due_date: due_date || null,
-    }
+      description: description || null,
+    };
     const token = localStorage.getItem("token");
     const res = await fetch("http://127.0.0.1:8000/campaigns", {
       method: "POST",
@@ -66,6 +68,16 @@ function CreateCampaign() {
               onChange={(e) => setDue_date(e.target.value)}
             />
             <br />
+          </label>
+          <br /><br />
+          <label>
+            Campaign Description :
+            <input
+              type="textArea"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
           </label>
           <br /><br />
           <Link to={"/campaigns"}>

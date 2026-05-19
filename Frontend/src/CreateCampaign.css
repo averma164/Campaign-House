@@ -209,115 +209,127 @@ input:focus {
 }
 
 /* ========================= */
-/* SHOW CAMPAIGN PAGE */
+/* ✅ CAMPAIGN DETAIL CARD */
 /* ========================= */
-.show-card {
-  max-width: 720px;
+
+.campaign-detail-card {
+  max-width: 750px;
   margin: auto;
-  background: rgba(255,255,255,0.9);
   padding: 30px;
+
+  background: rgba(255,255,255,0.92);
   border-radius: 20px;
+
+  box-shadow: 0 20px 40px rgba(109, 40, 217, 0.18);
   backdrop-filter: blur(12px);
-  box-shadow: 0 20px 40px rgba(109, 40, 217, 0.2);
+
+  text-align: left;
 }
 
-/* HEADER */
-.show-header {
+/* TOP ROW */
+.top-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
-.label {
-  font-size: 12px;
-  color: #6D28D9;
+/* CAMPAIGN ID */
+.campaign-id {
+  font-size: 18px;
   font-weight: 600;
-  letter-spacing: 1px;
+  color: #4C1D95;
 }
 
-.show-header h1 {
-  font-size: 30px;
-  color: #2d1b4e;
-  margin: 6px 0;
-}
-
-/* STATUS */
-.status {
-  background: #dcfce7;
-  color: #15803d;
-  padding: 4px 10px;
-  border-radius: 10px;
-  font-size: 12px;
-}
-
-/* ICON */
-.icon-box {
-  font-size: 40px;
-  background: #EDE9FE;
-  padding: 10px;
-  border-radius: 12px;
-}
-
-/* INFO GRID */
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin: 20px 0;
-}
-
-.info-card {
-  background: #F9FAFB;
-  padding: 16px;
+/* STATUS BADGE */
+.status-badge {
+  padding: 6px 14px;
   border-radius: 14px;
-}
-
-.info-label {
   font-size: 12px;
-  color: #6D28D9;
-}
-
-.info-value {
-  font-size: 16px;
   font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-/* PROGRESS */
-.progress-box {
-  margin-top: 15px;
+/* ACTIVE */
+.status-badge.active {
+  background: #DCFCE7;
+  color: #15803D;
 }
 
-.progress-top {
+/* COMPLETED */
+.status-badge.completed {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+/* TITLE */
+.campaign-title {
+  margin-top: 18px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d1b4e;
+}
+
+/* META (DATE, TIME) */
+.campaign-meta {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #6B7280;
+}
+
+/* DESCRIPTION SECTION */
+.description-box {
+  margin-top: 22px;
+}
+
+.desc-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5B21B6;
+  margin-bottom: 6px;
+}
+
+.desc-text {
+  font-size: 14px;
+  color: #4B5563;
+  line-height: 1.7;
+}
+
+/* ACTION BUTTONS */
+.action-buttons {
+  margin-top: 25px;
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
-}
-
-.progress-bar {
-  height: 8px;
-  background: #e5e7eb;
-  border-radius: 10px;
-  margin: 6px 0;
-  overflow: hidden;
-}
-
-.progress-fill {
-  width: 75%;
-  height: 100%;
-  background: linear-gradient(135deg, #6D28D9, #8B5CF6);
-}
-
-.progress-text {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-/* ACTION ROW */
-.action-row {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
+  gap: 12px;
   flex-wrap: wrap;
+}
+
+/* BUTTON IMPROVEMENTS (OPTIONAL ENHANCE) */
+.btn.primary {
+  background: linear-gradient(135deg, #6D28D9, #A78BFA);
+  color: white;
+  box-shadow: 0 8px 25px rgba(109, 40, 217, 0.4);
+}
+
+.btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(109, 40, 217, 0.5);
+}
+
+.btn.danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn.danger:hover {
+  background: #dc2626;
+  color: white;
+}
+
+.btn.secondary {
+  background: white;
+  border: 1px solid #ddd;
+}
+
+.btn.secondary:hover {
+  background: #F3F4F6;
 }
