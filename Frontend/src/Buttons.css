@@ -4,6 +4,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 18px 24px;
+
+  /* subtle glass layer */
+  background: rgba(255,255,255,0.4);
+  border-radius: 14px;
   backdrop-filter: blur(10px);
 }
 
@@ -13,6 +17,7 @@
   align-items: stretch;
   padding: 0;
   gap: 14px;
+  background: transparent;
 }
 
 .sidebar .Bcontainer .left,
@@ -42,16 +47,24 @@
   cursor: pointer;
   font-size: 14px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
+
+  /* smoother text */
+  letter-spacing: 0.3px;
 }
 
-/* SOFT GLOW EFFECT */
+/* SHINE / GLOW EFFECT */
 .btn::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 12px;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.35),
+    transparent
+  );
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -60,52 +73,55 @@
   opacity: 1;
 }
 
-/* CREATE BUTTON */
+/* ✅ CREATE BUTTON (Primary CTA) */
 .btn.create {
-  background: rgba(255, 255, 255, 0.05);
-  /* color: white; */
-  border: 1px solid rgba(255,255,255,0.25);
-  backdrop-filter: blur(6px);
-  /* background: linear-gradient(135deg, #6D28D9, #8B5CF6); */
+  background: linear-gradient(135deg, #6D28D9, #8B5CF6);
   color: white !important;
+  border: none;
+
   box-shadow: 0 8px 25px rgba(109, 40, 217, 0.45);
 }
 
 .btn.create:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(109, 40, 217, 0.55);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 14px 35px rgba(109, 40, 217, 0.6);
 }
 
-/* ABOUT + LOGOUT */
+/* ✅ SECONDARY BUTTONS (About / Logout) */
 .btn.about,
 .btn.logout {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.7);
+  color: #5B21B6;
+  border: 1px solid rgba(109, 40, 217, 0.2);
+
   backdrop-filter: blur(6px);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
 }
 
 .btn.about:hover,
 .btn.logout:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(109, 40, 217, 0.55);
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 10px 25px rgba(109, 40, 217, 0.25);
 }
 
-/* PAGINATION */
+/* ✅ PAGINATION BUTTON */
 .btn.pager {
   background: white;
   color: #6D28D9;
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
 
 .btn.pager:hover {
-  background: #ede9fe;
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(109, 40, 217, 0.55);
+  background: #F5F3FF;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(109, 40, 217, 0.25);
 }
 
-/* ACTIVE CLICK FEEDBACK */
+/* ✅ ACTIVE CLICK FEEDBACK */
 .btn:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }

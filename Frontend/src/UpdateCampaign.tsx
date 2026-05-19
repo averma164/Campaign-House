@@ -112,20 +112,3 @@ function UpdateCampaign() {
 }
 
 export default UpdateCampaign;
-//   const fetchCampaign = async () => {
-  //     try {
-  //       const res = await fetch(`http://127.0.0.1:8000/campaings/{id}`);
-  //       const data = await res.json();
-
-  //       console.log("Fetched:", data);
-
-  //       setName(data.name || "");
-  //       setDueDate(
-  //         data.due_date
-  //           ? new Date(data.due_date).toISOString().slice(0, 16) 
-  //           : ""
-  //       );
-  //     } catch (error) {
-  //       console.error("Error fetching campaign:", error);
-  //     }
-  //   fetchCampaign();

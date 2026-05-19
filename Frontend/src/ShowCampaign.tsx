@@ -60,45 +60,80 @@ function ShowCampaign() {
     }
   };
 
+  
   return (
     <div className="maincreate">
-      <div className="form-container">
-        <h2>Campaign Details</h2>
+      <div className="show-card">
 
         {error ? (
           <div>
-            <p style={{ color: "red" }}>{error}</p>
-            <button className="sbtn" onClick={() => navigate("/campaigns")}>
+            <p className="error-text">{error}</p>
+            <button className="btn primary" onClick={() => navigate("/campaigns")}>
               Back to campaigns
             </button>
           </div>
         ) : campaign ? (
-          <div className="show-details">
-            <p><strong>ID:</strong> {campaign.campaign_id}</p>
-            <p><strong>Name:</strong> {campaign.name}</p>
-            <p>
-              <strong>Due Date:</strong>{" "}
-              {campaign.due_date ? new Date(campaign.due_date).toLocaleString() : "No due date"}
-            </p>
+          <>
+            {/* HEADER */}
+            <div className="show-header">
+              <div>
+                <p className="label">CAMPAIGN DETAILS</p>
+                <h1>{campaign.name}</h1>
+                <span className="status">Active</span>
+              </div>
 
-            <div className="card-actions">
+              <div className="icon-box">📣</div>
+            </div>
+
+            {/* INFO CARDS */}
+            <div className="info-grid">
+              <div className="info-card">
+                <p className="info-label">Due Date</p>
+                <p className="info-value">
+                  {campaign.due_date
+                    ? new Date(campaign.due_date).toLocaleString()
+                    : "No due date"}
+                </p>
+              </div>
+
+              <div className="info-card">
+                <p className="info-label">Campaign ID</p>
+                <p className="info-value">{campaign.campaign_id}</p>
+              </div>
+            </div>
+
+            {/* PROGRESS */}
+            <div className="quote-box">
+              <blockquote className="quote-text">
+                "Never doubt that a small group of thoughtful, committed citizens can change the world." — Margaret Mead
+              </blockquote>
+            </div>
+
+            {/* ACTIONS */}
+            <div className="action-row">
               <Link to="/campaigns">
-                <button className="btn update">Back to campaigns</button>
+                <button className="btn secondary">
+                  ← Back to campaigns
+                </button>
               </Link>
-              <button className="btn delete" onClick={handleDelete}>
-                Delete campaign
+
+              <button className="btn danger" onClick={handleDelete}>
+                🗑 Delete Campaign
               </button>
+
               <Link to={`/update/${campaign.campaign_id}`}>
-                <button className="btn update">Edit campaign</button>
+                <button className="btn primary">
+                  ✏ Edit Campaign
+                </button>
               </Link>
             </div>
-          </div>
+          </>
         ) : (
           <p>Loading...</p>
         )}
       </div>
     </div>
-  );
-}
+  )
+};
 
 export default ShowCampaign;

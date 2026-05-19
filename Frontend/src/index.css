@@ -1,51 +1,48 @@
-/* Reset */
+/* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* Body */
+/* BODY */
 body {
-  background: #faf9ff;
+  background: linear-gradient(180deg, #F5F3FF, #EDE9FE);
   color: #2d1b4e;
 }
 
-/* Navbar */
+/* NAVBAR */
 .topcontainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 40px;
-  background: #ffffff;
-  box-shadow: 0 2px 10px rgba(128, 90, 213, 0.08);
-  border-bottom: 1px solid #eee;
+  padding: 16px 40px;
+
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid rgba(0,0,0,0.05);
   position: relative;
 }
 
-/* Left section */
-.left {
+/* LEFT + RIGHT */
+.left, .right {
   display: flex;
-  gap: 10px;
+  gap: 14px;
 }
 
-/* Right section */
-.right {
-  display: flex;
-  gap: 20px;
-}
-
-/* Buttons */
+/* BUTTONS */
 .topcontainer button {
   padding: 8px 18px;
   border-radius: 20px;
   cursor: pointer;
   font-size: 14px;
-  transition: 0.3s;
+  transition: all 0.25s ease;
+  font-weight: 500;
 }
 
-/* Login */
+/* LOGIN */
 .left a:first-child button {
   background: transparent;
   border: 1px solid #7c3aed;
@@ -54,100 +51,156 @@ body {
 
 .left a:first-child button:hover {
   background: #ede9fe;
+  transform: translateY(-2px);
 }
 
-/* Signup */
+/* SIGNUP (PRIMARY CTA) */
 .left a:nth-child(2) button {
   background: linear-gradient(120deg, #7c3aed, #a78bfa);
   color: white;
   border: none;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
 }
 
-/* Title center */
+.left a:nth-child(2) button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.6);
+}
+
+/* TITLE */
 .topcontainer h2 {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   color: #5b21b6;
+  font-weight: 600;
 }
 
-/* Nav links */
+/* NAV LINKS */
 .right a {
   text-decoration: none;
   color: #4c1d95;
   font-weight: 500;
+  transition: 0.2s;
 }
 
 .right a:hover {
   color: #7c3aed;
 }
 
-/* Hero */
+/* HERO */
 .hero {
   text-align: center;
   padding: 120px 20px;
-  background: linear-gradient(135deg, #7c3aed, #c4b5fd);
+
+  background: linear-gradient(135deg, #6D28D9, #A78BFA);
   color: white;
+  position: relative;
+  overflow: hidden;
 }
 
+/* subtle glow effect */
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: rgba(255,255,255,0.2);
+  filter: blur(120px);
+  top: -100px;
+  right: -100px;
+}
+
+/* HERO TEXT */
 .hero h1 {
   font-size: 56px;
+  font-weight: 700;
 }
 
 .hero p {
   font-size: 20px;
-  margin-top: 10px;
+  margin-top: 12px;
+  opacity: 0.9;
 }
 
-/* Stats */
+/* STATS SECTION */
 .index-stats {
   display: flex;
   justify-content: center;
-  gap: 80px;
+  gap: 60px;
   padding: 80px 20px;
-  background: #ffffff;
   flex-wrap: wrap;
 }
 
-/* Cards */
+/* CARD */
 .card {
   text-align: center;
   padding: 30px;
-  background: #faf5ff;
-  border-radius: 16px;
-  width: 220px;
-  box-shadow: 0 6px 15px rgba(124, 58, 237, 0.08);
-  transition: 0.3s;
+  background: white;
+  border-radius: 18px;
+  width: 230px;
+
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
+/* top accent */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(135deg, #6D28D9, #8B5CF6);
+}
+
+/* hover */
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 18px 40px rgba(109, 40, 217, 0.2);
 }
 
-/* Numbers */
+/* NUMBERS */
 .card p:first-child {
-  font-size: 28px;
-  font-weight: bold;
-  color: #7c3aed;
+  font-size: 30px;
+  font-weight: 700;
+  color: #6D28D9;
 }
 
-/* Footer */
+/* LABEL */
+.card p:last-child {
+  margin-top: 8px;
+  color: #4B5563;
+}
+
+/* FOOTER */
 footer {
   text-align: center;
   margin-top: 40px;
-  padding: 15px;
-  background: #4c1d95;
+  padding: 18px;
+
+  background: linear-gradient(135deg, #4c1d95, #6D28D9);
   color: white;
 }
 
-/* Responsive */
+/* RESPONSIVE */
 @media (max-width: 768px) {
+
   .hero h1 {
     font-size: 36px;
   }
 
-  .stats {
+  .index-stats {
     flex-direction: column;
     align-items: center;
+  }
+
+  .topcontainer {
+    padding: 14px 20px;
   }
 }
