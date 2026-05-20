@@ -6,10 +6,12 @@ from sqlmodel import Session, select
 from db.database import get_session
 from models.campaign import Campaign
 from models.user import User
-from schemas.campaign import CampaignCreate
+from schemas.campaign import CampaignCreate, CampaignUpdate
 from schemas.common import Response, PaginatedResponse
 from utils.pagination import encode_cursor, decode_cursor
 from api.deps import get_current_user
+from models.history import History
+from models.notification import Notification
 
 router = APIRouter()
 @router.get("/stats")
@@ -39,16 +41,13 @@ def read_campaigns(
     user: User = Depends(get_current_user)  
 ):
     cursor_id = decode_cursor(cursor) if cursor else 0
-
     stmt = (
         select(Campaign)
         .where(Campaign.campaign_id > cursor_id)
         .order_by(Campaign.campaign_id)
         .limit(limit + 1)
     )
-
     data = session.exec(stmt).all()
-    
     now = datetime.utcnow()
     for c in data:
         if c.due_date and c.due_date < now:
@@ -90,19 +89,32 @@ def create_campaign(
     session: Session = Depends(get_session),
     user: User = Depends(get_current_user) 
 ):
-    db = Campaign.model_validate(campaign)
-
+    db = Campaign(**campaign.model_dump())
+    db.owner_id = user.id
+    db.category_id = campaign.category_id 
     session.add(db)
     session.commit()
     session.refresh(db)
-
+    history = History(
+        campaign_id= db.campaign_id,
+        action="created",
+        changed_by=user.id
+    )
+    notification = Notification(
+        user_id=db.owner_id,
+        campaign_id=db.campaign_id,
+        message="created"
+    )
+    session.add(notification)
+    session.add(history)
+    session.commit()
     return {"data": db}
 
 
 @router.put("/{id}", response_model=Response[Campaign])
 def update_campaign(
     id: int,
-    campaign: CampaignCreate,
+    campaign: CampaignUpdate,
     session: Session = Depends(get_session),
     user: User = Depends(get_current_user)  
 ):
@@ -111,12 +123,28 @@ def update_campaign(
     if not data:
         raise HTTPException(status_code=404, detail="Campaign not found")
     
-    data.description = campaign.description
-    data.status = campaign.status if campaign.status else data.status
-    data.name = campaign.name
-    data.due_date = campaign.due_date
+    if data.owner_id != user.id and user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    update_data = campaign.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        if hasattr(data, key):
+            setattr(data, key, value)
+    history = History(
+        campaign_id= data.campaign_id,
+        action="updated",
+        changed_by=user.id
+    )
+    
+    notification = Notification(
+        user_id=data.owner_id,
+        campaign_id=data.campaign_id,
+        message="updated"
+    )
+    session.add(notification)
+    session.add(history)
+   
     print(data)
-    session.add(data)
     session.commit()
     session.refresh(data)
 
@@ -133,7 +161,21 @@ def delete_campaign(
 
     if not data:
         raise HTTPException(status_code=404, detail="Campaign not found")
-
+    
+    if data.owner_id != user.id and user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    history = History(
+        campaign_id= data.campaign_id,
+        action="deleted",
+        changed_by=user.id
+    )
+    notification = Notification(
+        user_id=data.owner_id,
+        campaign_id=data.campaign_id,
+        message="deleted"
+    )
+    session.add(notification)
+    session.add(history)
     session.delete(data)
     session.commit()
 

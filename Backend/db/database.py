@@ -1,11 +1,11 @@
 from sqlmodel import SQLModel, create_engine, Session
 from core.config import settings
+from models.user import User
+from models.campaign import Campaign
+from models.category import Category
+from models.notification import Notification
+from models.history import History
 
-# engine = create_engine(
-#     settings.DATABASE_URL,
-#     echo = True,
-#     connect_args={"check_same_thread": False}  
-# )
 engine = create_engine(
     settings.DATABASE_URL,
     echo = True,
