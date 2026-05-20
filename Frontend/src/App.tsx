@@ -101,7 +101,9 @@ function App() {
 
             <p className={!showAllCampaigns ? "active" : ""} onClick={() => setShowAllCampaigns(false)}>Dashboard</p>
             <p className={showAllCampaigns ? "active" : ""} onClick={() => setShowAllCampaigns(true)}>Campaigns</p>
-            <p>Analytics</p>
+            <Link to="/analytics" className="Link">
+              <p>Analytics</p>
+            </Link>
             <p>Settings</p>
             <Link to="/" className="Link"><p>Index</p></Link>
           </nav>

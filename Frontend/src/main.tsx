@@ -4,11 +4,12 @@ import App from "./App";
 import CreateCampaign from "./CreateCampaign";
 import ReactDOM from "react-dom/client";
 import UpdateCampaign from "./UpdateCampaign";
-import ShowCampaign from "./ShowCampaign";
 import Index from "./Index";
 import Login from "./Login";
 import Signup from "./Signup"
 import About from "./About";
+import ShowCampaign from "./ShowCampaign";
+import Analytics from "./Analytics";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
@@ -21,6 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <Route path="/update/:id" element={<UpdateCampaign />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/analytics" element={<Analytics />} />
     </Routes>
   </BrowserRouter>
 );

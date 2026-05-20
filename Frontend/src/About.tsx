@@ -50,7 +50,7 @@ function About() {
         </div>
         <button
           className="about-back-button"
-          onClick={() => navigate(token ? "/campaigns" : "/")}
+          onClick={() => navigate(token === null ? "/" : "/campaigns")}
         >
           Return to Dashboard
         </button>

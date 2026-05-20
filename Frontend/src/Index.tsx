@@ -1,7 +1,28 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import "./index.css";
+import Crousel from "./Crousel";
+
+const features = [
+  "🚀 Fast Campaign Creation",
+  "📊 Real-time Analytics",
+  "🎯 Smart Targeting",
+  "⚡ Instant Updates",
+  "🔒 Secure Data",
+  "📈 Growth Insights"
+];
 
 function Index() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % features.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div>
 
@@ -33,6 +54,8 @@ function Index() {
         <p>Be the part of the change!</p>
       </div>
 
+        <Crousel/>
+
       {/* Stats */}
       <div className="index-stats">
         <div className="card">
@@ -61,4 +84,3 @@ function Index() {
 }
 
 export default Index;
-``
