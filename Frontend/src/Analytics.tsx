@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { PieChart, Pie, Cell, Tooltip } from "recharts";
-import "./App.css";
+import { Link, useNavigate } from "react-router-dom";
+import { PieChart, Pie, Cell, Tooltip,Legend  } from "recharts";
+// import "./App.css";
+import "./Analytics.css";
 
 type Campaign = {
   campaign_id: number;
@@ -52,113 +53,116 @@ function Analytics() {
   ];
 
   const COLORS = ["#6D28D9", "#DC2626"];
-  const totalValue = stats.active + stats.completed;
+  // const totalValue = stats.active + stats.completed;
 
   return (
-    <div className="analytics-page">
+  <div className="analytics-container">
+    <h1>Analytics</h1>
+    <br />
+    <div className="grid">
 
-      <h1>📊 Analytics Dashboard</h1>
+      {/* ✅ CARD 1 – STATS SUMMARY */}
+      <div className="card highlight">
+        <h2>Campaign Overview</h2>
+        <p className="sub">Real-time performance summary</p>
 
-      {/* ✅ STATS */}
-      <div className="stats">
-        <div className="stat-card">Total<br /><b>{stats.total}</b></div>
-        <div className="stat-card">Active<br /><b>{stats.active}</b></div>
-        <div className="stat-card">Completed<br /><b>{stats.completed}</b></div>
+        <div className="stats-row">
+          <div>Total <b>{stats.total}</b></div>
+          <div>Active <b>{stats.active}</b></div>
+          <div>Completed <b>{stats.completed}</b></div>
+        </div>
+        
+        <p className="trend">
+          📈 {stats.active} campaigns currently running
+        </p>
+
+      <div className="progress-section">
+        <p>Completion</p>
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{
+              width: `${(stats.completed / stats.total) * 100 || 0}%`
+            }}
+          />
+        </div>
+</div>
+
       </div>
 
-      {/* ✅ PIE */}
-      <div className="analytics-section-center">
-        <h2>Status Distribution</h2>
+      {/* ✅ CARD 2 – PIE CHART */}
+      <div className="card">
+        <h3>Status Distribution</h3>
 
-        <PieChart width={300} height={300}>
+        <PieChart width={350} height={240}>
           <Pie
             data={pieData}
-            cx="50%"
+            cx="65%"
             cy="50%"
-            outerRadius={100}
+            outerRadius={90}
             dataKey="value"
-            label={(entry) => {
-              const percent = totalValue
-                ? (entry.value / totalValue) * 100
-                : 0;
-              return percent > 0 ? `${percent.toFixed(0)}%` : "";
-            }}
           >
             {pieData.map((_, index) => (
               <Cell key={index} fill={COLORS[index]} />
             ))}
           </Pie>
-
-          <text
-            x="50%"
-            y="50%"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="18"
-            fill="#4C1D95"
-          >
-            {totalValue
-              ? `${Math.round((stats.active / totalValue) * 100)}%`
-              : "0%"}
-          </text>
-
           <Tooltip />
+          
+          <Legend 
+            verticalAlign="bottom"
+            align="right"
+            layout="horizontal"
+          />
+
         </PieChart>
       </div>
-      {/* ✅ DEADLINES */}
-<div className="deadlines-wrapper">
 
-  {/* UPCOMING */}
-  <div className="deadline-card">
-    <div className="card-head">Upcoming</div>
+      {/* ✅ CARD 3 – UPCOMING */}
+      <div className="card">
+        <h3>Upcoming Campaigns</h3>
 
-    <div className="card-body">
-      {upcoming.length > 0 ? (
-        upcoming.map(c => (
-          <div
-            key={c.campaign_id}
-            className="deadline-item"
-            onClick={() => navigate(`/campaigns/${c.campaign_id}`)}
-          >
-            <span>{c.name}</span>
-            <span className="date">
-              {new Date(c.due_date!).toLocaleDateString()}
-            </span>
-          </div>
-        ))
-      ) : (
-        <p className="empty-text">No upcoming ✅</p>
-      )}
+        {upcoming.length > 0 ? (
+          upcoming.map(c => (
+            <div
+              key={c.campaign_id}
+              className="list-item"
+              onClick={() => navigate(`/campaigns/${c.campaign_id}`)}
+            >
+              <span>{c.name}</span>
+              <small>{new Date(c.due_date!).toLocaleDateString()}</small>
+            </div>
+          ))
+        ) : (
+          <p className="empty">No upcoming ✅</p>
+        )}
+      </div>
+
+      {/* ✅ CARD 4 – OVERDUE */}
+      <div className="card">
+        <h3>Overdue Campaigns</h3>
+
+        {overdue.length > 0 ? (
+          overdue.map(c => (
+            <div
+              key={c.campaign_id}
+              className="list-item overdue"
+              onClick={() => navigate(`/campaigns/${c.campaign_id}`)}
+            >
+              <span>{c.name}</span>
+              <small>{new Date(c.due_date!).toLocaleDateString()}</small>
+            </div>
+          ))
+        ) : (
+          <p className="empty">No overdue 🚀</p>
+        )}
+      </div>
+
     </div>
+    <Link to={"/campaigns"}>
+        <button className="rbtn">Return</button>
+      </Link>
   </div>
 
-    {/* OVERDUE */}
-    <div className="deadline-card">
-        <div className="card-head">Overdue</div>
-
-        <div className="card-body">
-        {overdue.length > 0 ? (
-            overdue.map(c => (
-            <div
-                key={c.campaign_id}
-                className="deadline-item overdue"
-                onClick={() => navigate(`/campaigns/${c.campaign_id}`)}
-            >
-                <span>{c.name}</span>
-                <span className="date">
-                {new Date(c.due_date!).toLocaleDateString()}
-                </span>
-            </div>
-            ))
-        ) : (
-            <p className="empty-text">No overdue 🚀</p>
-        )}
-        </div>
-    </div>
-
-    </div>
-
-    </div>
   );
 }
 
