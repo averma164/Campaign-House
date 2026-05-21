@@ -89,6 +89,12 @@ def create_campaign(
     session: Session = Depends(get_session),
     user: User = Depends(get_current_user) 
 ):
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Only admins can create campaigns",
+        )
+
     db = Campaign(**campaign.model_dump())
     db.owner_id = user.id
     db.category_id = campaign.category_id 
@@ -123,8 +129,11 @@ def update_campaign(
     if not data:
         raise HTTPException(status_code=404, detail="Campaign not found")
     
-    if data.owner_id != user.id and user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    if data.owner_id != user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Only the campaign owner can update this campaign",
+        )
 
     update_data = campaign.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -162,8 +171,11 @@ def delete_campaign(
     if not data:
         raise HTTPException(status_code=404, detail="Campaign not found")
     
-    if data.owner_id != user.id and user.role != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+    if data.owner_id != user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Only the campaign owner can delete this campaign",
+        )
     history = History(
         campaign_id= data.campaign_id,
         action="deleted",

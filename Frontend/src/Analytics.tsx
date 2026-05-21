@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { PieChart, Pie, Cell, Tooltip,Legend  } from "recharts";
-// import "./App.css";
 import "./Analytics.css";
 
 type Campaign = {
@@ -52,13 +51,22 @@ function Analytics() {
     { name: "Completed", value: stats.completed }
   ];
 
-  const COLORS = ["#6D28D9", "#DC2626"];
-  // const totalValue = stats.active + stats.completed;
+  const COLORS = ["#7C3AED", "#94A3B8"];
+
+  const completionPct =
+    stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
   return (
   <div className="analytics-container">
-    <h1>Analytics</h1>
-    <br />
+    <header className="analytics-header">
+      <div>
+        <span className="analytics-eyebrow">Insights</span>
+        <h1>Analytics</h1>
+        <p className="analytics-sub">A real-time look at your campaigns.</p>
+      </div>
+      <Link to="/campaigns" className="analytics-back">&larr; Back to Dashboard</Link>
+    </header>
+
     <div className="grid">
 
       {/* ✅ CARD 1 – STATS SUMMARY */}
@@ -77,16 +85,17 @@ function Analytics() {
         </p>
 
       <div className="progress-section">
-        <p>Completion</p>
+        <div className="progress-head">
+          <span>Completion</span>
+          <span className="progress-value">{completionPct}%</span>
+        </div>
         <div className="progress-bar">
           <div
             className="progress-fill"
-            style={{
-              width: `${(stats.completed / stats.total) * 100 || 0}%`
-            }}
+            style={{ width: `${completionPct}%` }}
           />
         </div>
-</div>
+      </div>
 
       </div>
 
@@ -158,9 +167,6 @@ function Analytics() {
       </div>
 
     </div>
-    <Link to={"/campaigns"}>
-        <button className="rbtn">Return</button>
-      </Link>
   </div>
 
   );

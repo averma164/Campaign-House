@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from db.database import create_db_and_tables
-from api.routes import campaign, auth
+from api.routes import campaign, auth, notification
 
 
 @asynccontextmanager
@@ -24,6 +24,7 @@ app.add_middleware(
 
 app.include_router(campaign.router, prefix="/campaigns", tags=["Campaigns"])
 app.include_router(auth.router, tags=["Auth"])
+app.include_router(notification.router, prefix="/notifications", tags=["Notifications"])
 
 
 @app.get("/")

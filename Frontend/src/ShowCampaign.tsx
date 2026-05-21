@@ -10,9 +10,11 @@ function ShowCampaign() {
     name: string;
     due_date: string | null;
     status: string;          
-    description?: string;    
+    description?: string;
+    owner_id?: number;
   } | null>(null);
 
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -45,11 +47,33 @@ function ShowCampaign() {
         console.error("ShowCampaign error:", error);
         setError("Unable to load campaign details.");
       });
-      
+
+    fetch("http://127.0.0.1:8000/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((me) => {
+        if (me?.id != null) setCurrentUserId(me.id);
+      })
+      .catch(() => {});
   }, [id, navigate]);
+
+  const isOwner =
+    campaign != null &&
+    currentUserId != null &&
+    campaign.owner_id === currentUserId;
 
   const handleDelete = async () => {
     if (!id) return;
+    if (!isOwner) {
+      alert("Only the campaign owner can delete this campaign.");
+      return;
+    }
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this campaign? This cannot be undone."
+    );
+    if (!confirmed) return;
+
     const token = localStorage.getItem("token");
     const res = await fetch(`http://127.0.0.1:8000/campaigns/${id}`, {
       method: "DELETE",
@@ -141,18 +165,22 @@ return (
 
             {/* ✅ ACTION BUTTONS */}
             <div className="action-buttons">
-              <Link to={`/update/${campaign.campaign_id}`}>
-                <button className="btn primary">
-                  Edit Campaign
-                </button>
-              </Link>
+              {isOwner && (
+                <Link to={`/update/${campaign.campaign_id}`}>
+                  <button className="btn primary">
+                    Edit Campaign
+                  </button>
+                </Link>
+              )}
 
-              <button
-                className="btn danger"
-                onClick={handleDelete}
-              >
-                Delete Campaign
-              </button>
+              {isOwner && (
+                <button
+                  className="btn danger"
+                  onClick={handleDelete}
+                >
+                  Delete Campaign
+                </button>
+              )}
 
               <Link to="/campaigns">
                 <button className="btn secondary">

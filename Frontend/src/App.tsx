@@ -11,6 +11,8 @@ function App() {
   const [prevStack, setPrevStack] = useState<any[][]>([]);
   const [showAllCampaigns, setShowAllCampaigns] = useState(false);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0 });
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
 
 
   useEffect(() => {
@@ -49,6 +51,25 @@ function App() {
       })
       .catch(err => console.error("Stats error:", err));
 
+    fetch("http://127.0.0.1:8000/notifications", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((payload) => {
+        if (!payload?.data) return;
+        const unread = payload.data.filter((n: any) => !n.is_read).length;
+        setUnreadCount(unread);
+      })
+      .catch(() => {});
+
+    fetch("http://127.0.0.1:8000/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((me) => {
+        if (me?.role === "admin") setIsAdmin(true);
+      })
+      .catch(() => {});
   }, [navigate]);
 
   const fetchStats = () => {
@@ -90,63 +111,124 @@ function App() {
     setPrevStack((prev) => prev.slice(0, -1));
   };
 
+  const visibleCampaigns = showAllCampaigns ? campaigns : campaigns.slice(0, 2);
+
   return (
     <div className="app">
       <div className="layout">
 
-        {/* SIDEBAR */}
         <aside className="sidebar">
-          <h2 className="sidebar-h2"><b>Campaign House</b></h2>
-          <nav>
+          <Link to="/" className="sidebar-brand">
+            <span className="sidebar-mark" aria-hidden="true">CH</span>
+            <span className="sidebar-brand-name">Campaign House</span>
+          </Link>
 
-            <p className={!showAllCampaigns ? "active" : ""} onClick={() => setShowAllCampaigns(false)}>Dashboard</p>
-            <p className={showAllCampaigns ? "active" : ""} onClick={() => setShowAllCampaigns(true)}>Campaigns</p>
+          <nav className="sidebar-nav">
+            <p
+              className={`nav-item ${!showAllCampaigns ? "active" : ""}`}
+              onClick={() => setShowAllCampaigns(false)}
+            >
+              <span className="nav-icon" aria-hidden="true">🏠</span> Dashboard
+            </p>
+            <p
+              className={`nav-item ${showAllCampaigns ? "active" : ""}`}
+              onClick={() => setShowAllCampaigns(true)}
+            >
+              <span className="nav-icon" aria-hidden="true">📁</span> Campaigns
+            </p>
             <Link to="/analytics" className="Link">
-              <p>Analytics</p>
+              <p className="nav-item">
+                <span className="nav-icon" aria-hidden="true">📊</span> Analytics
+              </p>
             </Link>
-            <p>Settings</p>
-            <Link to="/" className="Link"><p>Index</p></Link>
+            <Link to="/notifications" className="Link">
+              <p className="nav-item">
+                <span className="nav-icon" aria-hidden="true">🔔</span> Notifications
+                {unreadCount > 0 && (
+                  <span className="nav-badge">{unreadCount}</span>
+                )}
+              </p>
+            </Link>
+            <Link to="/profile" className="Link">
+              <p className="nav-item">
+                <span className="nav-icon" aria-hidden="true">👤</span> Profile
+              </p>
+            </Link>
+            <Link to="/" className="Link">
+              <p className="nav-item">
+                <span className="nav-icon" aria-hidden="true">🌐</span> Home
+              </p>
+            </Link>
           </nav>
 
           <div className="sidebar-actions">
             <h3>Quick Actions</h3>
-            <Buttons showCreate={true} showPager={false} />
+            <Buttons showCreate={true} showPager={false} isAdmin={isAdmin} />
           </div>
         </aside>
 
-        {/* MAIN */}
         <main className="main">
           <header className="header">
-            <h1>Dashboard</h1>
-            <p className="p-quote">“Alone we can do so little; together we can do so much.”</p>
-            <p>Manage and monitor all your campaigns</p>
+            <div className="header-titles">
+              <h1>Dashboard</h1>
+              <p className="header-sub">Manage and monitor all your campaigns</p>
+            </div>
+            <br />
+            <blockquote className="p-quote">
+              “Alone we can do so little; together we can do so much.”
+            </blockquote>
           </header>
 
-          {/* STATS */}
-          <div className="stats">
-            <div className="stat-card">Total<br /><b>{stats.total}</b></div>
-            <div className="stat-card">Active<br /><b>{stats.active}</b></div>
-            <div className="stat-card">Completed<br /><b>{stats.completed}</b></div>
-          </div>
+          <section className="stats">
+            <div className="stat-card stat-total">
+              <div className="stat-card-head">
+                <span className="stat-icon" aria-hidden="true">📦</span>
+                <span className="stat-label">Total Campaigns</span>
+              </div>
+              <b className="stat-number">{stats.total}</b>
+            </div>
+            <div className="stat-card stat-active">
+              <div className="stat-card-head">
+                <span className="stat-icon" aria-hidden="true">🟢</span>
+                <span className="stat-label">Active</span>
+              </div>
+              <b className="stat-number">{stats.active}</b>
+            </div>
+            <div className="stat-card stat-completed">
+              <div className="stat-card-head">
+                <span className="stat-icon" aria-hidden="true">✅</span>
+                <span className="stat-label">Completed</span>
+              </div>
+              <b className="stat-number">{stats.completed}</b>
+            </div>
+          </section>
 
-          {/* CAMPAIGNS */}
-          <div className="container">
-            {campaigns.length > 0 ? (
-              (showAllCampaigns ? campaigns : campaigns.slice(0, 2)).map((c) => (
-                <CampaignCard
-                  key={c.campaign_id}
-                  campaign_id={c.campaign_id}
-                  name={c.name}
-                  due_date={c.due_date}
-                  status={c.status}
-                />
-              ))
-            ) : (
-              <p className="empty">No campaigns found </p>
-            )}
-          </div>
+          <section className="campaigns-section">
+            <div className="section-head">
+              <h2>{showAllCampaigns ? "All Campaigns" : "Recent Campaigns"}</h2>
+              <span className="section-count">{campaigns.length}</span>
+            </div>
 
-          {/* PAGINATION */}
+            <div className="container">
+              {visibleCampaigns.length > 0 ? (
+                visibleCampaigns.map((c) => (
+                  <CampaignCard
+                    key={c.campaign_id}
+                    campaign_id={c.campaign_id}
+                    name={c.name}
+                    due_date={c.due_date}
+                    status={c.status}
+                  />
+                ))
+              ) : (
+                <div className="empty">
+                  <p className="empty-title">No campaigns yet</p>
+                  <span>Once campaigns are created, they'll appear here.</span>
+                </div>
+              )}
+            </div>
+          </section>
+
           <div className="bottom-bar">
             <Buttons
               showCreate={false}

@@ -6,9 +6,10 @@ type Props = {
     onPrev?: React.MouseEventHandler<HTMLButtonElement>;
     showCreate?: boolean;
     showPager?: boolean;
+    isAdmin?: boolean;
 };
 
-function Buttons({ onNext, onPrev, showCreate = true, showPager = true }: Props){
+function Buttons({ onNext, onPrev, showCreate = true, showPager = true, isAdmin = false }: Props){
         const navigate = useNavigate();
 
         const handleLogout = () => {
@@ -20,9 +21,11 @@ function Buttons({ onNext, onPrev, showCreate = true, showPager = true }: Props)
                 <div className="Bcontainer">
                     {showCreate && (
                         <div className="left">
-                            <Link to="/create">
-                                <button className="btn create">Create new Campaign</button>
-                            </Link>
+                            {isAdmin && (
+                                <Link to="/create">
+                                    <button className="btn create">Create new Campaign</button>
+                                </Link>
+                            )}
                             <Link to="/about">
                                 <button className="btn about">About</button>
                             </Link>

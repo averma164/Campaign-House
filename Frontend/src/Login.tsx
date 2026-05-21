@@ -35,9 +35,14 @@ function Login() {
     <div className="login-page">
       <div className="login-container">
 
-        <h1 className="login-title">Login</h1>
+        <Link to="/" className="auth-brand">
+          <span className="brand-mark" aria-hidden="true">CH</span>
+          <span className="auth-brand-name">Campaign House</span>
+        </Link>
+
+        <h1 className="login-title">Welcome back</h1>
         <h4 className="login-subtitle">
-          It Always Seems Impossible Until It's Done!
+          It always seems impossible until it's done.
         </h4>
 
         {error && <p className="login-error">{error}</p>}

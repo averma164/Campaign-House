@@ -1,84 +1,86 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import "./index.css";
 import Crousel from "./Crousel";
 
-const features = [
-  "🚀 Fast Campaign Creation",
-  "📊 Real-time Analytics",
-  "🎯 Smart Targeting",
-  "⚡ Instant Updates",
-  "🔒 Secure Data",
-  "📈 Growth Insights"
+const STATS = [
+  { value: "250+", label: "Campaigns running" },
+  { value: "120K+", label: "Members engaged" },
+  { value: "50+",  label: "Partner companies" },
 ];
 
 function Index() {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % features.length);
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div>
+    <div className="index-page">
+      <header className="topcontainer">
+        <Link to="/" className="brand">
+          <span className="brand-mark" aria-hidden="true">CH</span>
+          <span className="brand-name">Campaign House</span>
+        </Link>
 
-      {/* Navbar */}
-      <div className="topcontainer">
-        <div className="left">
-          <Link to="/login">
-            <button>Login</button>
-          </Link>
-          <Link to="/signup">
-            <button>Sign Up</button>
-          </Link>
-        </div>
-
-        <h2>Campaign House</h2>
-
-        <div className="right">
+        <nav className="nav-links">
           <Link to="/">Home</Link>
           <Link to="/about">About</Link>
+        </nav>
+
+        <div className="nav-cta">
+          <Link to="/login">
+            <button className="btn-ghost">Login</button>
+          </Link>
+          <Link to="/signup">
+            <button className="btn-primary">Sign Up</button>
+          </Link>
         </div>
-      </div>
+      </header>
 
-      {/* Hero */}
-      <div className="hero">
-        <h1>Discover Campaigns</h1>
-        <h1>That Matter</h1>
-        <p>Explore ongoing campaigns</p>
-        <p>Around you</p>
-        <p>Be the part of the change!</p>
-      </div>
-
-        <Crousel/>
-
-      {/* Stats */}
-      <div className="index-stats">
-        <div className="card">
-          <p>250+</p>
-          <p>Campaigns</p>
+      <section className="hero">
+        <div className="hero-orbs" aria-hidden="true">
+          <span className="orb orb-1" />
+          <span className="orb orb-2" />
+          <span className="orb orb-3" />
         </div>
 
-        <div className="card">
-          <p>120K+</p>
-          <p>People Joined</p>
-        </div>
+        <div className="hero-content">
+          <span className="hero-eyebrow">Discover. Engage. Impact.</span>
+          <h1 className="hero-title">
+            Campaigns <span className="hero-gradient">that matter</span>,
+            <br /> people that move.
+          </h1>
+          <p className="hero-sub">
+            Explore ongoing initiatives around you and be the part of the change you want to see.
+          </p>
 
-        <div className="card">
-          <p>50+</p>
-          <p>Companies</p>
+          <div className="hero-actions">
+            <Link to="/signup">
+              <button className="btn-primary btn-lg">Get Started</button>
+            </Link>
+            <Link to="/about">
+              <button className="btn-ghost btn-lg">Learn more</button>
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Footer */}
-      <footer>
-        © 2026 Aditi Verma All Rights Reserved
+      <section className="carousel-section">
+        <h2 className="section-title">Why teams pick Campaign House</h2>
+        <p className="section-sub">A platform built for momentum.</p>
+        <Crousel />
+      </section>
+
+      <section className="index-stats" aria-label="Platform stats">
+        {STATS.map((s) => (
+          <div className="stat-card" key={s.label}>
+            <p className="stat-value">{s.value}</p>
+            <p className="stat-label">{s.label}</p>
+          </div>
+        ))}
+      </section>
+
+      <footer className="index-footer">
+        <div className="footer-inner">
+          <span className="brand-mark sm" aria-hidden="true">CH</span>
+          <p>© 2026 Aditi Verma — All Rights Reserved</p>
+        </div>
       </footer>
-
     </div>
   );
 }

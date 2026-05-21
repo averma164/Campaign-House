@@ -1,5 +1,6 @@
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./theme.css";
 import App from "./App";
 import CreateCampaign from "./CreateCampaign";
 import ReactDOM from "react-dom/client";
@@ -10,6 +11,8 @@ import Signup from "./Signup"
 import About from "./About";
 import ShowCampaign from "./ShowCampaign";
 import Analytics from "./Analytics";
+import Profile from "./Profile";
+import Notifications from "./Notifications";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
@@ -23,6 +26,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/analytics" element={<Analytics />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/notifications" element={<Notifications />} />
     </Routes>
   </BrowserRouter>
 );
