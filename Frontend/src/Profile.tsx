@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Profile.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 
 type UserProfile = {
   id: number;
@@ -71,7 +73,7 @@ function Profile() {
       <div className="profile-container">
 
         <div className="profile-header">
-          <Link to="/campaigns" className="profile-back">&larr; Back to Dashboard</Link>
+          <Link to="/campaigns" className="profile-back"><FontAwesomeIcon icon={faLeftLong} /> Back to Dashboard</Link>
           <h1>Profile</h1>
           <p className="profile-subtitle">Your account details</p>
         </div>
@@ -138,9 +140,6 @@ function Profile() {
             </div>
 
             <div className="profile-actions">
-              <button className="profile-btn secondary" onClick={() => navigate("/campaigns")}>
-                Back to Dashboard
-              </button>
               <button className="profile-btn danger" onClick={handleLogout}>
                 Log Out
               </button>

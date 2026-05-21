@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Notifications.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 
 type Notification = {
   id: number;
@@ -94,7 +96,7 @@ function Notifications() {
 
         <div className="notifications-header">
           <Link to="/campaigns" className="notifications-back">
-            &larr; Back to Dashboard
+          <FontAwesomeIcon icon={faLeftLong} /> Back to Dashboard
           </Link>
           <h1>Notifications</h1>
           <p className="notifications-subtitle">
