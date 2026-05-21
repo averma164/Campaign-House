@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import "./Crousel.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLeftLong, faRightLong } from "@fortawesome/free-solid-svg-icons";
 
 const features = [
   "🚀 Fast Campaign Creation",
@@ -43,7 +45,7 @@ function FeatureSlider() {
       setIndex((prev) => (prev - 1 + features.length) % features.length)
     }
   >
-    ←
+    <FontAwesomeIcon icon={faLeftLong} />
   </button>
 
   <button
@@ -52,7 +54,7 @@ function FeatureSlider() {
       setIndex((prev) => (prev + 1) % features.length)
     }
   >
-    →
+    <FontAwesomeIcon icon={faRightLong} />
   </button>
 
   {/* SLIDES */}

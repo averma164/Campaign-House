@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import "./CreateCampaign.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendarDays, faHashtag, faLeftLong, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 function ShowCampaign() {
   const { id } = useParams();
@@ -126,7 +128,7 @@ return (
             {/* ✅ TOP ROW */}
             <div className="top-row">
               <h3 className="campaign-id">
-                #CMP-{campaign.campaign_id}
+              <FontAwesomeIcon icon={faHashtag} />CMP-{campaign.campaign_id}
               </h3>
 
               <span
@@ -147,7 +149,7 @@ return (
 
             {/* ✅ DATE */}
             <div className="campaign-meta">
-              📅 Date:{" "}
+            <FontAwesomeIcon icon={faCalendarDays} /> Date:{" "}
               {campaign.due_date
                 ? new Date(
                     campaign.due_date
@@ -168,7 +170,7 @@ return (
               {isOwner && (
                 <Link to={`/update/${campaign.campaign_id}`}>
                   <button className="btn primary">
-                    Edit Campaign
+                  <FontAwesomeIcon icon={faPencil} />Edit Campaign
                   </button>
                 </Link>
               )}
@@ -178,13 +180,13 @@ return (
                   className="btn danger"
                   onClick={handleDelete}
                 >
-                  Delete Campaign
+                  <FontAwesomeIcon icon={faTrash} /> Delete Campaign
                 </button>
               )}
 
               <Link to="/campaigns">
                 <button className="btn secondary">
-                  ← Back
+                <FontAwesomeIcon icon={faLeftLong} /> Back
                 </button>
               </Link>
             </div>

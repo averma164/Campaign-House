@@ -3,7 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import CampaignCard from "./CampaginCard";
 import Buttons from "./Buttons";
 import "./App.css";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell, faChartPie, faCircle, faGlobe, faHouse, faSquareCheck, faSquarePlus, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faFolder } from "@fortawesome/free-solid-svg-icons";
 function App() {
   const navigate = useNavigate();
   const [campaigns, setCampaigns] = useState<any[]>([]);
@@ -128,22 +130,21 @@ function App() {
               className={`nav-item ${!showAllCampaigns ? "active" : ""}`}
               onClick={() => setShowAllCampaigns(false)}
             >
-              <span className="nav-icon" aria-hidden="true">🏠</span> Dashboard
-            </p>
+<span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faHouse} /></span> Dashboard            </p>
             <p
               className={`nav-item ${showAllCampaigns ? "active" : ""}`}
               onClick={() => setShowAllCampaigns(true)}
             >
-              <span className="nav-icon" aria-hidden="true">📁</span> Campaigns
+              <span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faFolder} /></span> Campaigns
             </p>
             <Link to="/analytics" className="Link">
               <p className="nav-item">
-                <span className="nav-icon" aria-hidden="true">📊</span> Analytics
+                <span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faChartPie} /></span> Analytics
               </p>
             </Link>
             <Link to="/notifications" className="Link">
               <p className="nav-item">
-                <span className="nav-icon" aria-hidden="true">🔔</span> Notifications
+                <span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faBell} /></span> Notifications
                 {unreadCount > 0 && (
                   <span className="nav-badge">{unreadCount}</span>
                 )}
@@ -151,12 +152,12 @@ function App() {
             </Link>
             <Link to="/profile" className="Link">
               <p className="nav-item">
-                <span className="nav-icon" aria-hidden="true">👤</span> Profile
+                <span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faUser} /></span> Profile
               </p>
             </Link>
             <Link to="/" className="Link">
               <p className="nav-item">
-                <span className="nav-icon" aria-hidden="true">🌐</span> Home
+                <span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faGlobe} /></span> Home
               </p>
             </Link>
           </nav>
@@ -181,21 +182,21 @@ function App() {
           <section className="stats">
             <div className="stat-card stat-total">
               <div className="stat-card-head">
-                <span className="stat-icon" aria-hidden="true">📦</span>
+                <span className="stat-icon" aria-hidden="true"><FontAwesomeIcon icon={faSquarePlus} /></span>
                 <span className="stat-label">Total Campaigns</span>
               </div>
               <b className="stat-number">{stats.total}</b>
             </div>
             <div className="stat-card stat-active">
               <div className="stat-card-head">
-                <span className="stat-icon" aria-hidden="true">🟢</span>
+                <span className="stat-icon" aria-hidden="true"><FontAwesomeIcon icon={faCircle} /></span>
                 <span className="stat-label">Active</span>
               </div>
               <b className="stat-number">{stats.active}</b>
             </div>
             <div className="stat-card stat-completed">
               <div className="stat-card-head">
-                <span className="stat-icon" aria-hidden="true">✅</span>
+                <span className="stat-icon" aria-hidden="true"><FontAwesomeIcon icon={faSquareCheck} /></span>
                 <span className="stat-label">Completed</span>
               </div>
               <b className="stat-number">{stats.completed}</b>

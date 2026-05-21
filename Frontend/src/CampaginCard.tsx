@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import "./CampaignCard.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faCalendarDays, faHashtag } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   campaign_id: number;
@@ -22,7 +24,7 @@ const CampaignCard = ({ campaign_id, name, due_date, status }: Props) => {
   return (
     <div className="campaign-card">
       <div className="card-top">
-        <span className="card-id">#CMP-{campaign_id}</span>
+        <span className="card-id"><FontAwesomeIcon icon={faHashtag} />CMP-{campaign_id}</span>
         <span className={`card-status status-${normalizedStatus}`}>
           {normalizedStatus}
         </span>
@@ -34,14 +36,14 @@ const CampaignCard = ({ campaign_id, name, due_date, status }: Props) => {
 
       <div className="card-body">
         <div className="meta-row">
-          <span className="meta-icon" aria-hidden="true">📅</span>
+          <span className="meta-icon" aria-hidden="true"><FontAwesomeIcon icon={faCalendarDays} />  </span>
           <span className="meta-text">{formattedDate}</span>
         </div>
       </div>
 
       <div className="card-actions">
         <Link to={`/campaigns/${campaign_id}`}>
-          <button className="btn view">View details &rarr;</button>
+          <button className="btn view">View details<FontAwesomeIcon icon={faArrowRight} /></button>
         </Link>
       </div>
     </div>
