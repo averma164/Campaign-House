@@ -15,9 +15,16 @@ def signup(user: UserCreate, session: Session = Depends(get_session)):
     if existing:
         raise HTTPException(status_code=400, detail="Email exists")
 
+    
     db_user = User(
         email=user.email,
-        hashed_password=hash_password(user.password)
+        hashed_password=hash_password(user.password),
+        role=user.role,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        city=user.city,
+        state=user.state,
+        pincode=user.pincode,
     )
 
     session.add(db_user)
