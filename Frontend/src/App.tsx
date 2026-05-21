@@ -173,7 +173,6 @@ function App() {
               <h1>Dashboard</h1>
               <p className="header-sub">Manage and monitor all your campaigns</p>
             </div>
-            <br />
             <blockquote className="p-quote">
               “Alone we can do so little; together we can do so much.”
             </blockquote>
