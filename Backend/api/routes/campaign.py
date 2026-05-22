@@ -106,13 +106,19 @@ def create_campaign(
         action="created",
         changed_by=user.id
     )
-    notification = Notification(
-        user_id=db.owner_id,
-        campaign_id=db.campaign_id,
-        message="created"
-    )
-    session.add(notification)
     session.add(history)
+
+    user_ids = session.exec(select(User.id)).all()
+    notifications = [
+        Notification(
+            user_id=uid,
+            campaign_id=db.campaign_id,
+            message="created",
+        )
+        for uid in user_ids
+    ]
+    session.add_all(notifications)
+
     session.commit()
     return {"data": db}
 
@@ -176,19 +182,34 @@ def delete_campaign(
             status_code=403,
             detail="Only the campaign owner can delete this campaign",
         )
-    history = History(
-        campaign_id= data.campaign_id,
-        action="deleted",
-        changed_by=user.id
-    )
-    notification = Notification(
-        user_id=data.owner_id,
-        campaign_id=data.campaign_id,
-        message="deleted"
-    )
-    session.add(notification)
-    session.add(history)
+
+    deleted_campaign_id = data.campaign_id
+    owner_id = data.owner_id
+
+    existing_history = session.exec(
+        select(History).where(History.campaign_id == deleted_campaign_id)
+    ).all()
+    for h in existing_history:
+        session.delete(h)
+
+    existing_notifs = session.exec(
+        select(Notification).where(Notification.campaign_id == deleted_campaign_id)
+    ).all()
+    for n in existing_notifs:
+        n.campaign_id = None
+        session.add(n)
+
     session.delete(data)
+    session.flush()
+
+    session.add(
+        Notification(
+            user_id=owner_id,
+            campaign_id=None,
+            message=f"deleted CMP-{deleted_campaign_id}",
+        )
+    )
+
     session.commit()
 
     return None

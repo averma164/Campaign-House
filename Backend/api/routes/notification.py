@@ -55,7 +55,7 @@ def mark_all_read(
     stmt = (
         select(Notification)
         .where(Notification.user_id == user.id)
-        .where(Notification.is_read == False)  # noqa: E712 (SQLModel needs ==, not `is`)
+        .where(Notification.is_read == False) 
     )
     items = session.exec(stmt).all()
 

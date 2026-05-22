@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { PieChart, Pie, Cell, Tooltip,Legend  } from "recharts";
 import "./Analytics.css";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
+    
 type Campaign = {
   campaign_id: number;
   name: string;
@@ -64,7 +66,7 @@ function Analytics() {
         <h1>Analytics</h1>
         <p className="analytics-sub">A real-time look at your campaigns.</p>
       </div>
-      <Link to="/campaigns" className="analytics-back">&larr; Back to Dashboard</Link>
+      <Link to="/campaigns" className="analytics-back"><FontAwesomeIcon icon={faLeftLong} /> Back to Dashboard</Link>
     </header>
 
     <div className="grid">
@@ -81,7 +83,7 @@ function Analytics() {
         </div>
         
         <p className="trend">
-          📈 {stats.active} campaigns currently running
+           {stats.active} campaigns currently running
         </p>
 
       <div className="progress-section">
@@ -99,7 +101,7 @@ function Analytics() {
 
       </div>
 
-      {/* ✅ CARD 2 – PIE CHART */}
+      {/* PIE CHART */}
       <div className="card">
         <h3>Status Distribution</h3>
 
@@ -126,7 +128,7 @@ function Analytics() {
         </PieChart>
       </div>
 
-      {/* ✅ CARD 3 – UPCOMING */}
+      {/* UPCOMING */}
       <div className="card">
         <h3>Upcoming Campaigns</h3>
 
@@ -142,11 +144,11 @@ function Analytics() {
             </div>
           ))
         ) : (
-          <p className="empty">No upcoming ✅</p>
+          <p className="empty">No upcoming </p>
         )}
       </div>
 
-      {/* ✅ CARD 4 – OVERDUE */}
+      {/* OVERDUE */}
       <div className="card">
         <h3>Overdue Campaigns</h3>
 
@@ -162,7 +164,7 @@ function Analytics() {
             </div>
           ))
         ) : (
-          <p className="empty">No overdue 🚀</p>
+          <p className="empty">No overdue </p>
         )}
       </div>
 

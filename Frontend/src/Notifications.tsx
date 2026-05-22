@@ -90,6 +90,14 @@ function Notifications() {
 
   const unreadCount = items.filter((n) => !n.is_read).length;
 
+  // Messages may be plain ("created", "updated") or carry a deleted
+  // campaign reference ("deleted CMP-12") because the FK is gone.
+  const parseMessage = (n: Notification) => {
+    const match = /^([a-zA-Z]+)(?:\s+(CMP-\d+))?$/.exec(n.message.trim());
+    if (!match) return { action: n.message, label: null as string | null };
+    return { action: match[1], label: match[2] ?? null };
+  };
+
   return (
     <div className="notifications-page">
       <div className="notifications-container">
@@ -137,42 +145,48 @@ function Notifications() {
 
         {!loading && !error && items.length > 0 && (
           <ul className="notifications-list">
-            {items.map((n) => (
-              <li
-                key={n.id}
-                className={`notification-item ${n.is_read ? "read" : "unread"}`}
-              >
-                <div className="notification-dot" aria-hidden="true" />
+            {items.map((n) => {
+              const { action, label } = parseMessage(n);
+              const reference = n.campaign_id
+                ? `#${n.campaign_id}`
+                : label ?? "";
+              return (
+                <li
+                  key={n.id}
+                  className={`notification-item ${n.is_read ? "read" : "unread"}`}
+                >
+                  <div className="notification-dot" aria-hidden="true" />
 
-                <div className="notification-body">
-                  <div className="notification-message">
-                    Campaign {n.campaign_id ? `#${n.campaign_id}` : ""}{" "}
-                    <span className={`action action-${n.message}`}>{n.message}</span>
+                  <div className="notification-body">
+                    <div className="notification-message">
+                      Campaign {reference}{" "}
+                      <span className={`action action-${action}`}>{action}</span>
+                    </div>
+                    <div className="notification-meta">{formatDate(n.created_at)}</div>
                   </div>
-                  <div className="notification-meta">{formatDate(n.created_at)}</div>
-                </div>
 
-                <div className="notification-actions">
-                  {n.campaign_id && (
-                    <Link
-                      to={`/campaigns/${n.campaign_id}`}
-                      className="action-link"
-                    >
-                      View
-                    </Link>
-                  )}
-                  {!n.is_read && (
-                    <button
-                      type="button"
-                      className="action-link ghost"
-                      onClick={() => markOneRead(n.id)}
-                    >
-                      Mark read
-                    </button>
-                  )}
-                </div>
-              </li>
-            ))}
+                  <div className="notification-actions">
+                    {n.campaign_id && (
+                      <Link
+                        to={`/campaigns/${n.campaign_id}`}
+                        className="action-link"
+                      >
+                        View
+                      </Link>
+                    )}
+                    {!n.is_read && (
+                      <button
+                        type="button"
+                        className="action-link ghost"
+                        onClick={() => markOneRead(n.id)}
+                      >
+                        Mark read
+                      </button>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

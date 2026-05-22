@@ -8,7 +8,7 @@
   color: var(--ink-700);
 }
 
-/* ============ HEADER ============ */
+/*  HEADER */
 .analytics-header {
   display: flex;
   justify-content: space-between;
@@ -64,14 +64,14 @@
   transform: translateY(-1px);
 }
 
-/* ============ GRID ============ */
+/*  GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   gap: 18px;
 }
 
-/* ============ CARD ============ */
+/*  CARD */
 .analytics-container .card {
   position: relative;
   background: rgba(255, 255, 255, 0.92);
@@ -110,7 +110,7 @@
     rgba(255, 255, 255, 0.92);
 }
 
-/* ============ TYPE ============ */
+/* TYPE */
 .analytics-container h1,
 .analytics-container h2,
 .analytics-container h3 {
@@ -136,7 +136,7 @@
   font-size: 13px;
 }
 
-/* ============ STATS ROW ============ */
+/*  STATS ROW  */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -172,7 +172,7 @@
   font-weight: 500;
 }
 
-/* ============ PROGRESS ============ */
+/*  PROGRESS  */
 .progress-section {
   margin-top: 22px;
 }
@@ -206,7 +206,7 @@
   transition: width var(--t-slow) var(--ease);
 }
 
-/* ============ LIST ITEMS ============ */
+/* LIST ITEMS  */
 .list-item {
   display: flex;
   justify-content: space-between;
@@ -258,7 +258,7 @@
   color: var(--danger-600);
 }
 
-/* ============ EMPTY ============ */
+/* EMPTY */
 .analytics-container .empty {
   font-size: 13.5px;
   color: var(--ink-400);
@@ -270,7 +270,7 @@
   text-align: center;
 }
 
-/* ============ RESPONSIVE ============ */
+/*  RESPONSIVE  */
 @media (max-width: 720px) {
   .grid {
     grid-template-columns: 1fr;

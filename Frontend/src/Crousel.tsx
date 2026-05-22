@@ -1,16 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import "./App.css";
 import "./Crousel.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLeftLong, faRightLong } from "@fortawesome/free-solid-svg-icons";
+import {
+  faLeftLong,
+  faRightLong,
+  faRocket,
+  faChartColumn,
+  faBullseye,
+  faBolt,
+  faLock,
+  faChartLine,
+} from "@fortawesome/free-solid-svg-icons";
 
-const features = [
-  "🚀 Fast Campaign Creation",
-  "📊 Real-time Analytics",
-  "🎯 Smart Targeting",
-  "⚡ Instant Updates",
-  "🔒 Secure Data",
-  "📈 Growth Insights"
+const features: ReactNode[] = [
+  <>
+    <FontAwesomeIcon icon={faRocket} /> Fast Campaign Creation
+  </>,
+  <>
+    <FontAwesomeIcon icon={faChartColumn} /> Real-time Analytics
+  </>,
+  <>
+    <FontAwesomeIcon icon={faBullseye} /> Smart Targeting
+  </>,
+  <>
+    <FontAwesomeIcon icon={faBolt} /> Instant Updates
+  </>,
+  <>
+    <FontAwesomeIcon icon={faLock} /> Secure Data
+  </>,
+  <>
+    <FontAwesomeIcon icon={faChartLine} /> Growth Insights
+  </>,
 ];
 
 function FeatureSlider() { 

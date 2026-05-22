@@ -3,6 +3,14 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import "./CreateCampaign.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarDays, faHashtag, faLeftLong, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import Alert, { type AlertColor } from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 
 function ShowCampaign() {
   const { id } = useParams();
@@ -18,6 +26,17 @@ function ShowCampaign() {
 
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [error, setError] = useState<string>("");
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({ open: false, message: "", severity: "info" });
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const showAlert = (message: string, severity: AlertColor = "info") =>
+    setSnackbar({ open: true, message, severity });
+  const closeAlert = () => setSnackbar((s) => ({ ...s, open: false }));
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -65,32 +84,39 @@ function ShowCampaign() {
     currentUserId != null &&
     campaign.owner_id === currentUserId;
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!id) return;
     if (!isOwner) {
-      alert("Only the campaign owner can delete this campaign.");
+      showAlert("Only the campaign owner can delete this campaign.", "info");
       return;
     }
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this campaign? This cannot be undone."
-    );
-    if (!confirmed) return;
+    setConfirmOpen(true);
+  };
 
-    const token = localStorage.getItem("token");
-    const res = await fetch(`http://127.0.0.1:8000/campaigns/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    });
+  const confirmDelete = async () => {
+    if (!id) return;
+    setDeleting(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://127.0.0.1:8000/campaigns/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
 
-    if (res.status === 204) {
-      alert("Campaign deleted successfully.");
-      navigate("/campaigns");
-    } else {
-      const data = await res.json().catch(() => null);
-      const message = data?.detail || "Unable to delete campaign.";
-      alert(message);
+      setConfirmOpen(false);
+
+      if (res.status === 204) {
+        showAlert("Campaign deleted successfully.", "success");
+        setTimeout(() => navigate("/campaigns"), 1500);
+      } else {
+        const data = await res.json().catch(() => null);
+        const message = data?.detail || "Unable to delete campaign.";
+        showAlert(message, "error");
+      }
+    } finally {
+      setDeleting(false);
     }
   };
   
@@ -125,7 +151,7 @@ return (
           </div>
         ) : campaign ? (
           <>
-            {/* ✅ TOP ROW */}
+            {/* TOP ROW */}
             <div className="top-row">
               <h3 className="campaign-id">
               <FontAwesomeIcon icon={faHashtag} />CMP-{campaign.campaign_id}
@@ -142,12 +168,12 @@ return (
               </span>
             </div>
 
-            {/* ✅ NAME */}
+            {/*NAME */}
             <p className="campaign-title">
               Campaign Name: {campaign.name}
             </p>
 
-            {/* ✅ DATE */}
+            {/* DATE */}
             <div className="campaign-meta">
             <FontAwesomeIcon icon={faCalendarDays} /> Date:{" "}
               {campaign.due_date
@@ -157,7 +183,7 @@ return (
                 : "No due date"}
             </div>
 
-            {/* ✅ DESCRIPTION */}
+            {/* DESCRIPTION */}
             <div className="description-box">
               <p className="desc-label">Description:</p>
               <p className="desc-text">
@@ -165,7 +191,7 @@ return (
               </p>
             </div>
 
-            {/* ✅ ACTION BUTTONS */}
+            {/* ACTION BUTTONS */}
             <div className="action-buttons">
               {isOwner && (
                 <Link to={`/update/${campaign.campaign_id}`}>
@@ -196,6 +222,54 @@ return (
         )}
 
       </div>
+
+      <Dialog
+        open={confirmOpen}
+        onClose={() => !deleting && setConfirmOpen(false)}
+        aria-labelledby="delete-campaign-title"
+      >
+        <DialogTitle id="delete-campaign-title">Delete campaign?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this campaign? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setConfirmOpen(false)}
+            disabled={deleting}
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmDelete}
+            disabled={deleting}
+            color="error"
+            variant="contained"
+            autoFocus
+          >
+            {deleting ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={closeAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={closeAlert}
+          variant="standard"
+          color={snackbar.severity}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

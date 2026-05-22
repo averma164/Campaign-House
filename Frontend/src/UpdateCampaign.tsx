@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./CreateCampaign.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import Alert, { type AlertColor } from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 function UpdateCampaign() {
   const { id } = useParams();
@@ -9,6 +11,15 @@ function UpdateCampaign() {
   const [description, setDescription] = useState("");
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const navigate = useNavigate();
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({ open: false, message: "", severity: "info" });
+
+  const showAlert = (message: string, severity: AlertColor = "info") =>
+    setSnackbar({ open: true, message, severity });
+  const closeAlert = () => setSnackbar((s) => ({ ...s, open: false }));
 
   useEffect(() => {
     if (!id) return;
@@ -37,8 +48,8 @@ function UpdateCampaign() {
         }
 
         if (!campaignRes.ok) {
-          alert("Unable to load campaign.");
-          navigate("/campaigns");
+          showAlert("Unable to load campaign.", "error");
+          setTimeout(() => navigate("/campaigns"), 1500);
           return;
         }
 
@@ -47,8 +58,8 @@ function UpdateCampaign() {
         const campaign = campaignData.data;
 
         if (!me || campaign?.owner_id !== me.id) {
-          alert("Only the campaign owner can edit this campaign.");
-          navigate(`/campaigns/${id}`);
+          showAlert("Only the campaign owner can edit this campaign.", "info");
+          setTimeout(() => navigate(`/campaigns/${id}`), 1500);
           return;
         }
 
@@ -92,13 +103,32 @@ function UpdateCampaign() {
       const data = await res.json();
       console.log("Update:", data);
 
-      alert("Campaign Updated!");
-      navigate("/campaigns");
+      showAlert("Campaign Updated!", "success");
+      setTimeout(() => navigate("/campaigns"), 1500);
     } catch (error) {
       console.error("Error updating campaign:", error);
-      alert("Update failed!");
+      showAlert("Update failed!", "error");
     }
   };
+
+  const snackbarEl = (
+    <Snackbar
+      open={snackbar.open}
+      autoHideDuration={4000}
+      onClose={closeAlert}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+    >
+      <Alert
+        onClose={closeAlert}
+        variant="standard"
+        color={snackbar.severity}
+        severity={snackbar.severity}
+        sx={{ width: "100%" }}
+      >
+        {snackbar.message}
+      </Alert>
+    </Snackbar>
+  );
 
   if (authorized !== true) {
     return (
@@ -106,6 +136,7 @@ function UpdateCampaign() {
         <div className="form-container">
           <h2>Checking access...</h2>
         </div>
+        {snackbarEl}
       </div>
     );
   }
@@ -154,6 +185,7 @@ function UpdateCampaign() {
           </div>
         </form>
       </div>
+      {snackbarEl}
     </div>
   );
 }

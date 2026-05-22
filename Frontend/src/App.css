@@ -10,7 +10,7 @@
   min-height: 100vh;
 }
 
-/* ============ SIDEBAR ============ */
+/*  SIDEBAR */
 .sidebar {
   width: 240px;
   flex-shrink: 0;
@@ -158,7 +158,7 @@
   text-transform: uppercase;
 }
 
-/* ============ MAIN ============ */
+/*  MAIN  */
 .main {
   flex: 1;
   min-width: 0;

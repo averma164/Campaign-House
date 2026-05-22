@@ -1,5 +1,5 @@
-/* ============ PAGE ============ */
-.maincreate {
+  /*  PAGE  */
+  .maincreate {
   min-height: 100vh;
   padding: 40px clamp(16px, 4vw, 32px);
   background:
@@ -10,7 +10,7 @@
   align-items: flex-start;
 }
 
-/* ============ FORM CONTAINER ============ */
+/*  FORM CONTAINER */
 .form-container {
   width: 100%;
   max-width: 520px;
@@ -41,7 +41,7 @@
   gap: 16px;
 }
 
-/* ============ INPUTS ============ */
+/*  INPUTS  */
 .form label {
   display: block;
   text-align: left;
@@ -107,7 +107,7 @@ select:focus {
   box-shadow: var(--ring);
 }
 
-/* ============ FORM ACTIONS ============ */
+/*  FORM ACTIONS  */
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -169,7 +169,7 @@ select:focus {
   transform: translateY(-2px);
 }
 
-/* ============ CAMPAIGN DETAIL CARD ============ */
+/*  CAMPAIGN DETAIL CARD  */
 .campaign-detail-card {
   width: 100%;
   max-width: 760px;
@@ -271,7 +271,7 @@ select:focus {
   text-decoration: none;
 }
 
-/* Detail page button variants (reused) */
+
 .btn.primary {
   background: var(--brand-gradient-strong);
   color: #fff;

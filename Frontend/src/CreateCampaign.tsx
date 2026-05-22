@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import './CreateCampaign.css';
 import { Link, useNavigate } from "react-router-dom";
+import Alert, { type AlertColor } from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 const CATEGORIES: { id: number; name: string }[] = [
   { id: 1, name: "Others" },
@@ -31,6 +33,16 @@ function CreateCampaign() {
 
   const navigate = useNavigate();
 
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({ open: false, message: "", severity: "info" });
+
+  const showAlert = (message: string, severity: AlertColor = "info") =>
+    setSnackbar({ open: true, message, severity });
+  const closeAlert = () => setSnackbar((s) => ({ ...s, open: false }));
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -53,8 +65,8 @@ function CreateCampaign() {
       .then((me) => {
         if (!me) return;
         if (me.role !== "admin") {
-          alert("Only admins can create campaigns.");
-          navigate("/campaigns");
+          showAlert("Only admins can create campaigns.", "info");
+          setTimeout(() => navigate("/campaigns"), 1500);
           return;
         }
         setAuthorized(true);
@@ -100,19 +112,38 @@ function CreateCampaign() {
         } else if (Array.isArray(errorData?.detail) && errorData.detail[0]?.msg) {
           message = errorData.detail[0].msg;
         }
-        alert(message);
+        showAlert(message, "error");
         return;
       }
 
       const data = await res.json();
       console.log("Created:", data);
 
-      alert("Campaign created!");
-      navigate("/campaigns");
+      showAlert("Campaign created!", "success");
+      setTimeout(() => navigate("/campaigns"), 1500);
     } finally {
       setSubmitting(false);
     }
   };
+
+  const snackbarEl = (
+    <Snackbar
+      open={snackbar.open}
+      autoHideDuration={4000}
+      onClose={closeAlert}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+    >
+      <Alert
+        onClose={closeAlert}
+        variant="standard"
+        color={snackbar.severity}
+        severity={snackbar.severity}
+        sx={{ width: "100%" }}
+      >
+        {snackbar.message}
+      </Alert>
+    </Snackbar>
+  );
 
   if (authorized !== true) {
     return (
@@ -120,6 +151,7 @@ function CreateCampaign() {
         <div className="form-container">
           <h2>Checking access...</h2>
         </div>
+        {snackbarEl}
       </div>
     );
   }
@@ -226,6 +258,7 @@ function CreateCampaign() {
           </div>
         </form>
       </div>
+      {snackbarEl}
     </div>
   );
 }

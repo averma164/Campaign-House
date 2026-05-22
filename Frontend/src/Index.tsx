@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import "./index.css";
 import Crousel from "./Crousel";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCopyright } from "@fortawesome/free-solid-svg-icons";
 
 const STATS = [
   { value: "250+", label: "Campaigns running" },
@@ -78,7 +80,7 @@ function Index() {
       <footer className="index-footer">
         <div className="footer-inner">
           <span className="brand-mark sm" aria-hidden="true">CH</span>
-          <p>© 2026 Aditi Verma — All Rights Reserved</p>
+          <p><FontAwesomeIcon icon={faCopyright} /> 2026 Aditi Verma — All Rights Reserved</p>
         </div>
       </footer>
     </div>
