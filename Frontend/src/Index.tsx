@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import "./index.css";
 import Crousel from "./Crousel";
-import Butterflies from "./Butterflies";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopyright } from "@fortawesome/free-solid-svg-icons";
 
@@ -14,7 +13,6 @@ const STATS = [
 function Index() {
   return (
     <div className="index-page">
-      <Butterflies />
       <header className="topcontainer">
         <Link to="/" className="brand">
           <span className="brand-mark" aria-hidden="true">CH</span>
