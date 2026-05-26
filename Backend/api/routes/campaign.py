@@ -20,11 +20,12 @@ def get_campaign_stats(
     user: User = Depends(get_current_user)
 ):
     campaigns = session.exec(select(Campaign)).all()
-    now = datetime.utcnow()
+    
+    now = datetime.now()
     total = len(campaigns)
 
-    active = len([c for c in campaigns if not c.due_date or c.due_date > now])
-    completed = len([c for c in campaigns if c.due_date and c.due_date <= now])
+    completed = len([c for c in campaigns if c.due_date and c.due_date < now])
+    active = total - completed
 
     return {
         "total": total,
@@ -38,17 +39,53 @@ def read_campaigns(
     session: Session = Depends(get_session),
     cursor: str | None = Query(None),
     limit: int = 20,
-    user: User = Depends(get_current_user)  
+    q: str | None = Query(None, description="Search by name or description (partial, case-insensitive)"),
+    category_id: int | None = Query(None, description="Filter by category id"),
+    state: str | None = Query(None, description="Filter by state (partial, case-insensitive)"),
+    city: str | None = Query(None, description="Filter by city (partial, case-insensitive)"),
+    due_by: datetime | None = Query(None, description="Only campaigns due on or before this datetime"),
+    status: str | None = Query(None, description="Filter by computed status: 'active' or 'completed'"),
+    user: User = Depends(get_current_user)
 ):
     cursor_id = decode_cursor(cursor) if cursor else 0
+    now = datetime.now()
+
     stmt = (
         select(Campaign)
         .where(Campaign.campaign_id > cursor_id)
-        .order_by(Campaign.campaign_id)
-        .limit(limit + 1)
     )
+
+    
+    if q:
+        term = f"%{q.strip()}%"
+        stmt = stmt.where(
+            (Campaign.name.ilike(term)) | (Campaign.description.ilike(term))
+        )
+
+    
+    if category_id is not None:
+        stmt = stmt.where(Campaign.category_id == category_id)
+    if state:
+        stmt = stmt.where(Campaign.state.ilike(f"%{state.strip()}%"))
+    if city:
+        stmt = stmt.where(Campaign.city.ilike(f"%{city.strip()}%"))
+    if due_by is not None:
+        stmt = stmt.where(Campaign.due_date.is_not(None))
+        stmt = stmt.where(Campaign.due_date <= due_by)
+
+    
+    if status:
+        s = status.lower().strip()
+        if s == "active":
+            stmt = stmt.where(
+                (Campaign.due_date.is_(None)) | (Campaign.due_date > now)
+            )
+        elif s == "completed":
+            stmt = stmt.where(Campaign.due_date.is_not(None))
+            stmt = stmt.where(Campaign.due_date <= now)
+
+    stmt = stmt.order_by(Campaign.campaign_id).limit(limit + 1)
     data = session.exec(stmt).all()
-    now = datetime.utcnow()
     for c in data:
         if c.due_date and c.due_date < now:
             c.status = "completed"
@@ -59,8 +96,22 @@ def read_campaigns(
     next_url = None
 
     if len(data) > limit:
+        from urllib.parse import quote_plus
         next_cursor = encode_cursor(data[:limit][-1].campaign_id)
-        next_url = f"{base_url}?cursor={next_cursor}&limit={limit}"  
+        parts = [f"cursor={next_cursor}", f"limit={limit}"]
+        if q:
+            parts.append(f"q={quote_plus(q)}")
+        if category_id is not None:
+            parts.append(f"category_id={category_id}")
+        if state:
+            parts.append(f"state={quote_plus(state)}")
+        if city:
+            parts.append(f"city={quote_plus(city)}")
+        if due_by is not None:
+            parts.append(f"due_by={quote_plus(due_by.isoformat())}")
+        if status:
+            parts.append(f"status={quote_plus(status)}")
+        next_url = f"{base_url}?{'&'.join(parts)}"
 
     return {
         "data": data[:limit],

@@ -3,6 +3,7 @@ import './CreateCampaign.css';
 import { Link, useNavigate } from "react-router-dom";
 import Alert, { type AlertColor } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import PosterImageUpload from "./PosterImageUpload";
 
 const CATEGORIES: { id: number; name: string }[] = [
   { id: 1, name: "Others" },
@@ -27,6 +28,8 @@ function CreateCampaign() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
+  const [originPageUrl, setOriginPageUrl] = useState("");
+  const [posterImage, setPosterImage] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
@@ -91,7 +94,8 @@ function CreateCampaign() {
     if (city.trim()) body.city = city.trim();
     if (state.trim()) body.state = state.trim();
     if (pincode.trim()) body.pincode = pincode.trim();
-
+    if (originPageUrl.trim()) body.origin_page_url = originPageUrl.trim();
+    if (posterImage.trim()) body.poster_image = posterImage.trim();
     const token = localStorage.getItem("token");
 
     try {
@@ -214,6 +218,25 @@ function CreateCampaign() {
                 </option>
               ))}
             </select>
+          </label>
+
+          <label>
+            Origin Url
+            <input
+              type="url"
+              value={originPageUrl}
+              onChange={(e) => setOriginPageUrl(e.target.value)}
+              placeholder="Optional"
+            />
+          </label>
+
+          <label>
+            Poster Image
+            <PosterImageUpload
+              value={posterImage}
+              onChange={setPosterImage}
+              disabled={submitting}
+            />
           </label>
 
           <label>

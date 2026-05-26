@@ -22,10 +22,12 @@ function ShowCampaign() {
     status: string;          
     description?: string;
     owner_id?: number;
+    poster_image?: string;
   } | null>(null);
 
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [error, setError] = useState<string>("");
+  const [posterFailed, setPosterFailed] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -182,6 +184,19 @@ return (
                   ).toLocaleString()
                 : "No due date"}
             </div>
+
+            {/* POSTER IMAGE */}
+            {campaign.poster_image && !posterFailed && (
+              <div className="poster-image">
+                <img
+                  src={campaign.poster_image}
+                  alt={`${campaign.name} poster`}
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                  onError={() => setPosterFailed(true)}
+                />
+              </div>
+            )}
 
             {/* DESCRIPTION */}
             <div className="description-box">

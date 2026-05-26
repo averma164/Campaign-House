@@ -11,13 +11,18 @@ class CampaignCreate(SQLModel):
     city: Optional[str] = None
     state: Optional[str] = None
     pincode: Optional[str] = None
+    origin_page_url: Optional[str] = None
+    poster_image: Optional[str] = None
     
 class CampaignUpdate(SQLModel):
     name: Optional[str] = None
+    due_date: Optional[datetime] = None
     description: Optional[str] = None
     category_id: Optional[int] = None
+    origin_page_url: Optional[str] = None
     state: Optional[str] = None
     pincode: Optional[str] = None
+    poster_image: Optional[str] = None
 
 class CampaignRead(SQLModel):
     campaign_id: int
@@ -31,3 +36,5 @@ class CampaignRead(SQLModel):
     state: Optional[str] = None
     pincode: Optional[str] = None
     category_id: int | None = None
+    origin_page_url: Optional[str] = None
+    poster_image: Optional[str] = None

@@ -4,8 +4,53 @@ import CampaignCard from "./CampaginCard";
 import Buttons from "./Buttons";
 import "./App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faChartPie, faCircle, faGlobe, faHouse, faSquareCheck, faSquarePlus, faUser } from "@fortawesome/free-solid-svg-icons";
-import { faFolder } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBell,
+  faChartPie,
+  faCircle,
+  faGlobe,
+  faHouse,
+  faSquareCheck,
+  faSquarePlus,
+  faUser,
+  faFolder,
+  faMagnifyingGlass,
+  faXmark,
+  faFilter,
+} from "@fortawesome/free-solid-svg-icons";
+
+const API = "http://127.0.0.1:8000";
+
+const CATEGORIES: { id: number; name: string }[] = [
+  { id: 1, name: "Others" },
+  { id: 2, name: "Digital Marketing" },
+  { id: 3, name: "Product Launch" },
+  { id: 4, name: "Brand Awareness" },
+  { id: 5, name: "Lead Generation" },
+  { id: 6, name: "Customer Retention" },
+  { id: 7, name: "Fundraising" },
+  { id: 8, name: "Event Promotion" },
+  { id: 9, name: "Social Media Campaign" },
+  { id: 10, name: "Seasonal Campaign" },
+  { id: 11, name: "Affiliate Marketing" },
+];
+
+type Filters = {
+  categoryId: string;
+  state: string;
+  city: string;
+  dueBy: string;
+  status: string;
+};
+
+const EMPTY_FILTERS: Filters = {
+  categoryId: "",
+  state: "",
+  city: "",
+  dueBy: "",
+  status: "",
+};
+
 function App() {
   const navigate = useNavigate();
   const [campaigns, setCampaigns] = useState<any[]>([]);
@@ -17,6 +62,20 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
 
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [searching, setSearching] = useState(false);
+
+  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [debouncedFilters, setDebouncedFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const setFilter = (key: keyof Filters, value: string) =>
+    setFilters((f) => ({ ...f, [key]: value }));
+
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
+  const clearFilters = () => setFilters(EMPTY_FILTERS);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -24,36 +83,9 @@ function App() {
       return;
     }
 
-    fetch("http://127.0.0.1:8000/campaigns", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) {
-          setCampaigns([]);
-          return;
-        }
-        setCampaigns(data.data || []);
-        setNextUrl(data.next || null);
-      })
-      .catch(() => setCampaigns([]));
-    
-    fetchStats()
+    fetchStats();
 
-    fetch("http://127.0.0.1:8000/campaigns/stats", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setStats(data);
-      })
-      .catch(err => console.error("Stats error:", err));
-
-    fetch("http://127.0.0.1:8000/notifications", {
+    fetch(`${API}/notifications`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -64,7 +96,7 @@ function App() {
       })
       .catch(() => {});
 
-    fetch("http://127.0.0.1:8000/me", {
+    fetch(`${API}/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -73,6 +105,59 @@ function App() {
       })
       .catch(() => {});
   }, [navigate]);
+
+  // Debounce search + filter changes together so rapid edits result
+  // in a single API call after the user pauses.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setDebouncedFilters(filters);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [searchTerm, filters]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setSearching(true);
+
+    const params = new URLSearchParams();
+    if (debouncedSearch) params.set("q", debouncedSearch);
+    if (debouncedFilters.categoryId)
+      params.set("category_id", debouncedFilters.categoryId);
+    if (debouncedFilters.state.trim())
+      params.set("state", debouncedFilters.state.trim());
+    if (debouncedFilters.city.trim())
+      params.set("city", debouncedFilters.city.trim());
+    if (debouncedFilters.dueBy)
+      params.set("due_by", new Date(debouncedFilters.dueBy).toISOString());
+    if (debouncedFilters.status)
+      params.set("status", debouncedFilters.status);
+
+    const query = params.toString();
+    const url = query ? `${API}/campaigns?${query}` : `${API}/campaigns`;
+
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          setCampaigns([]);
+          setNextUrl(null);
+          return;
+        }
+        setCampaigns(data.data || []);
+        setNextUrl(data.next || null);
+        setPrevStack([]);
+      })
+      .catch(() => {
+        setCampaigns([]);
+        setNextUrl(null);
+      })
+      .finally(() => setSearching(false));
+  }, [debouncedSearch, debouncedFilters]);
 
   const fetchStats = () => {
     const token = localStorage.getItem("token");
@@ -113,7 +198,20 @@ function App() {
     setPrevStack((prev) => prev.slice(0, -1));
   };
 
-  const visibleCampaigns = showAllCampaigns ? campaigns : campaigns.slice(0, 2);
+  const hasSearch = debouncedSearch.length > 0;
+  const hasFilters = Object.values(debouncedFilters).some(Boolean);
+  const visibleCampaigns =
+    showAllCampaigns || hasSearch || hasFilters
+      ? campaigns
+      : campaigns.slice(0, 2);
+
+  const sectionTitle = hasSearch
+    ? `Search results for "${debouncedSearch}"`
+    : hasFilters
+    ? "Filtered campaigns"
+    : showAllCampaigns
+    ? "All Campaigns"
+    : "Recent Campaigns";
 
   return (
     <div className="app">
@@ -205,9 +303,124 @@ function App() {
 
           <section className="campaigns-section">
             <div className="section-head">
-              <h2>{showAllCampaigns ? "All Campaigns" : "Recent Campaigns"}</h2>
+              <h2>{sectionTitle}</h2>
               <span className="section-count">{campaigns.length}</span>
             </div>
+
+            <div className="search-bar">
+              <span className="search-icon" aria-hidden="true">
+                <FontAwesomeIcon icon={faMagnifyingGlass} />
+              </span>
+              <input
+                type="search"
+                className="search-input"
+                placeholder="Search campaigns by name or keyword..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="Search campaigns"
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  className="search-clear"
+                  onClick={() => setSearchTerm("")}
+                  aria-label="Clear search"
+                >
+                  <FontAwesomeIcon icon={faXmark} />
+                </button>
+              )}
+              <button
+                type="button"
+                className={`filter-toggle ${filtersOpen ? "open" : ""}`}
+                onClick={() => setFiltersOpen((v) => !v)}
+                aria-expanded={filtersOpen}
+                aria-controls="filter-panel"
+              >
+                <FontAwesomeIcon icon={faFilter} /> Filters
+                {activeFilterCount > 0 && (
+                  <span className="filter-toggle-badge">{activeFilterCount}</span>
+                )}
+              </button>
+              {searching && <span className="search-status">Searching…</span>}
+            </div>
+
+            {filtersOpen && (
+              <div className="filter-panel" id="filter-panel">
+                <div className="filter-grid">
+                  <label className="filter-field">
+                    <span>Category</span>
+                    <select
+                      value={filters.categoryId}
+                      onChange={(e) => setFilter("categoryId", e.target.value)}
+                    >
+                      <option value="">All categories</option>
+                      {CATEGORIES.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="filter-field">
+                    <span>Status</span>
+                    <select
+                      value={filters.status}
+                      onChange={(e) => setFilter("status", e.target.value)}
+                    >
+                      <option value="">Any status</option>
+                      <option value="active">Active</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </label>
+
+                  <label className="filter-field">
+                    <span>City</span>
+                    <input
+                      type="text"
+                      value={filters.city}
+                      onChange={(e) => setFilter("city", e.target.value)}
+                      placeholder="e.g. Mumbai"
+                    />
+                  </label>
+
+                  <label className="filter-field">
+                    <span>State</span>
+                    <input
+                      type="text"
+                      value={filters.state}
+                      onChange={(e) => setFilter("state", e.target.value)}
+                      placeholder="e.g. Maharashtra"
+                    />
+                  </label>
+
+                  <label className="filter-field">
+                    <span>Due by</span>
+                    <input
+                      type="date"
+                      value={filters.dueBy}
+                      onChange={(e) => setFilter("dueBy", e.target.value)}
+                    />
+                  </label>
+                </div>
+
+                {activeFilterCount > 0 && (
+                  <div className="filter-actions">
+                    <span className="filter-count-text">
+                      {activeFilterCount} filter
+                      {activeFilterCount === 1 ? "" : "s"} active
+                    </span>
+                    <button
+                      type="button"
+                      className="filter-clear"
+                      onClick={clearFilters}
+                    >
+                      <FontAwesomeIcon icon={faXmark} /> Clear all
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="container">
               {visibleCampaigns.length > 0 ? (
@@ -220,6 +433,13 @@ function App() {
                     status={c.status}
                   />
                 ))
+              ) : hasSearch ? (
+                <div className="empty">
+                  <p className="empty-title">
+                    No campaigns match "{debouncedSearch}"
+                  </p>
+                  <span>Try a different name or keyword.</span>
+                </div>
               ) : (
                 <div className="empty">
                   <p className="empty-title">No campaigns yet</p>

@@ -15,4 +15,6 @@ class Campaign(SQLModel, table=True):
     city: str | None = None
     state: str | None = None
     pincode: str | None = None
+    origin_page_url: Optional[str] = Field(default=None, max_length=500)
+    poster_image: Optional[str] = Field(default=None, max_length=500)
     owner: Optional["User"] = Relationship(back_populates="campaigns")

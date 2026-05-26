@@ -3,12 +3,32 @@ import "./CreateCampaign.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Alert, { type AlertColor } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import PosterImageUpload from "./PosterImageUpload";
+
+const CATEGORIES: { id: number; name: string }[] = [
+  { id: 1, name: "Others" },
+  { id: 2, name: "Digital Marketing" },
+  { id: 3, name: "Product Launch" },
+  { id: 4, name: "Brand Awareness" },
+  { id: 5, name: "Lead Generation" },
+  { id: 6, name: "Customer Retention" },
+  { id: 7, name: "Fundraising" },
+  { id: 8, name: "Event Promotion" },
+  { id: 9, name: "Social Media Campaign" },
+  { id: 10, name: "Seasonal Campaign" },
+  { id: 11, name: "Affiliate Marketing" },
+];
 
 function UpdateCampaign() {
   const { id } = useParams();
   const [name, setName] = useState("");
   const [due_date, setDueDate] = useState("");
   const [description, setDescription] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [originPageUrl, setOriginPageUrl] = useState("");
+  const [posterImage, setPosterImage] = useState("");
+  const [state, setState] = useState("");
+  const [pincode, setPincode] = useState("");
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const navigate = useNavigate();
   const [snackbar, setSnackbar] = useState<{
@@ -70,6 +90,13 @@ function UpdateCampaign() {
             : ""
         );
         setDescription(campaign.description || "");
+        setCategoryId(
+          campaign.category_id != null ? String(campaign.category_id) : ""
+        );
+        setOriginPageUrl(campaign.origin_page_url || "");
+        setPosterImage(campaign.poster_image || "");
+        setState(campaign.state || "");
+        setPincode(campaign.pincode || "");
         setAuthorized(true);
       } catch (error) {
         console.error("Error loading campaign:", error);
@@ -87,6 +114,11 @@ function UpdateCampaign() {
       name,
       due_date: due_date || null,
       description,
+      category_id: categoryId.trim() ? Number(categoryId) : null,
+      origin_page_url: originPageUrl.trim() || null,
+      poster_image: posterImage.trim() || null,
+      state: state.trim() || null,
+      pincode: pincode.trim() || null,
     };
 
     try {
@@ -174,6 +206,61 @@ function UpdateCampaign() {
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
               required
+            />
+          </label>
+
+          <label>
+            Category
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+            >
+              <option value="">Select a category (optional)</option>
+              {CATEGORIES.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            Origin Url
+            <input
+              type="url"
+              value={originPageUrl}
+              onChange={(e) => setOriginPageUrl(e.target.value)}
+              placeholder="Optional"
+            />
+          </label>
+
+          <label>
+            Poster Image
+            <PosterImageUpload
+              value={posterImage}
+              onChange={setPosterImage}
+            />
+          </label>
+
+          <label>
+            State
+            <input
+              type="text"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              placeholder="Optional"
+            />
+          </label>
+
+          <label>
+            Pincode
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={pincode}
+              onChange={(e) => setPincode(e.target.value)}
+              placeholder="Optional"
             />
           </label>
 

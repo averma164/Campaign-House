@@ -236,6 +236,43 @@ select:focus {
   color: var(--ink-400);
 }
 
+/* POSTER IMAGE */
+.poster-image {
+  margin-top: 22px;
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, var(--brand-50), #ffffff);
+  border: 1px solid var(--brand-100);
+  box-shadow: var(--shadow-md, 0 6px 18px rgba(124, 58, 237, 0.10));
+  transition:
+    transform var(--t-base, 200ms) var(--ease, ease),
+    box-shadow var(--t-base, 200ms) var(--ease, ease);
+  animation: ch-fade-up 600ms var(--ease-out, ease-out) both;
+}
+
+.poster-image:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg, 0 12px 28px rgba(124, 58, 237, 0.18));
+}
+
+.poster-image img {
+  display: block;
+  width: 100%;
+  max-height: 460px;
+  object-fit: cover;
+  object-position: center;
+  background: var(--brand-50);
+}
+
+@media (max-width: 640px) {
+  .poster-image img {
+    max-height: 320px;
+  }
+}
+
 .description-box {
   margin-top: 24px;
   padding: 18px 20px;
