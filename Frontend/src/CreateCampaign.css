@@ -2,9 +2,7 @@
   .maincreate {
   min-height: 100vh;
   padding: 40px clamp(16px, 4vw, 32px);
-  background:
-    radial-gradient(800px 420px at 90% -100px, rgba(167, 139, 250, 0.4), transparent 60%),
-    var(--page-gradient);
+  background: linear-gradient(135deg, #5B3EA4, #7B5CFF, #A78BFA);
   display: flex;
   justify-content: center;
   align-items: flex-start;

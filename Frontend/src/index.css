@@ -93,6 +93,18 @@
   transform: scaleX(1);
 }
 
+/* ACTIVE route — kept underline + bolder text + brand color */
+.nav-links a.active {
+  color: var(--brand-700);
+  font-weight: 700;
+}
+
+.nav-links a.active::after {
+  transform: scaleX(1);
+  height: 3px;
+  bottom: -4px;
+}
+
 .nav-cta {
   display: flex;
   gap: 10px;
@@ -103,14 +115,40 @@
   position: relative;
   overflow: hidden;
   padding: 110px 24px 130px;
-  background: var(--hero-gradient);
+  background: linear-gradient(
+    90deg,
+    #2E1065 0%,
+    #4C1D95 22%,
+    #6D28D9 45%,
+    #A78BFA 72%,
+    #EDE9FE 100%
+  );
   color: #fff;
+}
+
+.hero-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* tsparticles renders a <canvas> inside; make sure it fills the wrapper */
+.hero-particles canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .hero-orbs {
   position: absolute;
   inset: 0;
+  z-index: 1;
   pointer-events: none;
+}
+
+.hero > .hero-content {
+  position: relative;
+  z-index: 2;
 }
 
 .orb {
@@ -176,6 +214,9 @@
   line-height: 1.05;
   letter-spacing: -1px;
   margin: 0 0 18px;
+  text-shadow:
+    0 2px 6px rgba(46, 16, 101, 0.55),
+    0 4px 22px rgba(46, 16, 101, 0.35);
 }
 
 .hero-gradient {
@@ -185,12 +226,19 @@
   -webkit-text-fill-color: transparent;
 }
 
+/* Highlighted word — plain white emphasis */
+.hero-shine {
+  color: #fff;
+  font-weight: 900;
+}
+
 .hero-sub {
   max-width: 620px;
   margin: 0 auto 32px;
   font-size: 17px;
   line-height: 1.6;
-  opacity: 0.92;
+  opacity: 0.95;
+  text-shadow: 0 1px 4px rgba(46, 16, 101, 0.45);
 }
 
 .hero-actions {

@@ -13,21 +13,23 @@ import ShowCampaign from "./ShowCampaign";
 import Analytics from "./Analytics";
 import Profile from "./Profile";
 import Notifications from "./Notifications";
+import AppShell from "./AppShell";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Index />} />
-      <Route path="/campaigns" element={<App />} />
-      <Route path="/campaigns/:id" element={<ShowCampaign />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/create" element={<CreateCampaign />} />
-      <Route path="/update/:id" element={<UpdateCampaign />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/analytics" element={<Analytics />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/notifications" element={<Notifications />} />
+
+      <Route path="/campaigns" element={<AppShell><App /></AppShell>} />
+      <Route path="/campaigns/:id" element={<AppShell><ShowCampaign /></AppShell>} />
+      <Route path="/about" element={<AppShell><About /></AppShell>} />
+      <Route path="/create" element={<AppShell><CreateCampaign /></AppShell>} />
+      <Route path="/update/:id" element={<AppShell><UpdateCampaign /></AppShell>} />
+      <Route path="/analytics" element={<AppShell><Analytics /></AppShell>} />
+      <Route path="/profile" element={<AppShell><Profile /></AppShell>} />
+      <Route path="/notifications" element={<AppShell><Notifications /></AppShell>} />
     </Routes>
   </BrowserRouter>
 );

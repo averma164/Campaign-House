@@ -1,23 +1,20 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import CampaignCard from "./CampaginCard";
 import Buttons from "./Buttons";
 import "./App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBell,
-  faChartPie,
+  faArrowRight,
   faCircle,
-  faGlobe,
-  faHouse,
+  faFilter,
+  faMagnifyingGlass,
   faSquareCheck,
   faSquarePlus,
-  faUser,
-  faFolder,
-  faMagnifyingGlass,
   faXmark,
-  faFilter,
 } from "@fortawesome/free-solid-svg-icons";
+
+const PREVIEW_COUNT = 2;
 
 const API = "http://127.0.0.1:8000";
 
@@ -41,6 +38,7 @@ type Filters = {
   city: string;
   dueBy: string;
   status: string;
+  sort: string;
 };
 
 const EMPTY_FILTERS: Filters = {
@@ -49,18 +47,25 @@ const EMPTY_FILTERS: Filters = {
   city: "",
   dueBy: "",
   status: "",
+  sort: "",
 };
+
+const SORT_OPTIONS: { value: string; label: string }[] = [
+  { value: "", label: "Oldest first (default)" },
+  { value: "latest", label: "Latest first" },
+  { value: "due_date", label: "Due date" },
+  { value: "name", label: "Alphabetical (A → Z)" },
+];
 
 function App() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const showAllCampaigns = searchParams.get("view") === "all";
+
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [nextUrl, setNextUrl] = useState<string | null>(null);
   const [prevStack, setPrevStack] = useState<any[][]>([]);
-  const [showAllCampaigns, setShowAllCampaigns] = useState(false);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0 });
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [isAdmin, setIsAdmin] = useState(false);
-
 
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -73,7 +78,10 @@ function App() {
   const setFilter = (key: keyof Filters, value: string) =>
     setFilters((f) => ({ ...f, [key]: value }));
 
-  const activeFilterCount = Object.values(filters).filter(Boolean).length;
+  // Sort isn't really a "filter" — exclude it from the active count.
+  const activeFilterCount = (Object.keys(filters) as (keyof Filters)[])
+    .filter((k) => k !== "sort" && filters[k])
+    .length;
   const clearFilters = () => setFilters(EMPTY_FILTERS);
 
   useEffect(() => {
@@ -84,30 +92,8 @@ function App() {
     }
 
     fetchStats();
-
-    fetch(`${API}/notifications`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((payload) => {
-        if (!payload?.data) return;
-        const unread = payload.data.filter((n: any) => !n.is_read).length;
-        setUnreadCount(unread);
-      })
-      .catch(() => {});
-
-    fetch(`${API}/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((me) => {
-        if (me?.role === "admin") setIsAdmin(true);
-      })
-      .catch(() => {});
   }, [navigate]);
 
-  // Debounce search + filter changes together so rapid edits result
-  // in a single API call after the user pauses.
   useEffect(() => {
     const t = setTimeout(() => {
       setDebouncedSearch(searchTerm.trim());
@@ -134,6 +120,7 @@ function App() {
       params.set("due_by", new Date(debouncedFilters.dueBy).toISOString());
     if (debouncedFilters.status)
       params.set("status", debouncedFilters.status);
+    if (debouncedFilters.sort) params.set("sort", debouncedFilters.sort);
 
     const query = params.toString();
     const url = query ? `${API}/campaigns?${query}` : `${API}/campaigns`;
@@ -162,13 +149,13 @@ function App() {
   const fetchStats = () => {
     const token = localStorage.getItem("token");
 
-    fetch("http://127.0.0.1:8000/campaigns/stats", {
+    fetch(`${API}/campaigns/stats`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then(res => res.json())
-      .then(data => setStats(data));
+      .then((res) => res.json())
+      .then((data) => setStats(data));
   };
 
   const fetchData = async (url: string, isNext = true) => {
@@ -200,10 +187,13 @@ function App() {
 
   const hasSearch = debouncedSearch.length > 0;
   const hasFilters = Object.values(debouncedFilters).some(Boolean);
-  const visibleCampaigns =
-    showAllCampaigns || hasSearch || hasFilters
-      ? campaigns
-      : campaigns.slice(0, 2);
+  const isPreview = !showAllCampaigns && !hasSearch && !hasFilters;
+  const visibleCampaigns = isPreview
+    ? campaigns.slice(0, PREVIEW_COUNT)
+    : campaigns;
+  const hiddenCount = isPreview
+    ? Math.max(campaigns.length - visibleCampaigns.length, 0)
+    : 0;
 
   const sectionTitle = hasSearch
     ? `Search results for "${debouncedSearch}"`
@@ -213,254 +203,236 @@ function App() {
     ? "All Campaigns"
     : "Recent Campaigns";
 
+  const pageTitle = showAllCampaigns ? "Campaigns" : "Dashboard";
+  const pageSubtitle = showAllCampaigns
+    ? "Browse every campaign on the platform"
+    : "Manage and monitor all your campaigns";
+
   return (
-    <div className="app">
-      <div className="layout">
+    <main className="main">
+      <header className="header">
+        <div className="header-titles">
+          <h1>{pageTitle}</h1>
+          <p className="header-sub">{pageSubtitle}</p>
+        </div>
+        <blockquote className="p-quote">
+          “Alone we can do so little; together we can do so much.”
+        </blockquote>
+      </header>
 
-        <aside className="sidebar">
-          <Link to="/" className="sidebar-brand">
-            <span className="sidebar-mark" aria-hidden="true">CH</span>
-            <span className="sidebar-brand-name">Campaign House</span>
-          </Link>
-
-          <nav className="sidebar-nav">
-            <p
-              className={`nav-item ${!showAllCampaigns ? "active" : ""}`}
-              onClick={() => setShowAllCampaigns(false)}
-            >
-<span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faHouse} /></span> Dashboard            </p>
-            <p
-              className={`nav-item ${showAllCampaigns ? "active" : ""}`}
-              onClick={() => setShowAllCampaigns(true)}
-            >
-              <span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faFolder} /></span> Campaigns
-            </p>
-            <Link to="/analytics" className="Link">
-              <p className="nav-item">
-                <span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faChartPie} /></span> Analytics
-              </p>
-            </Link>
-            <Link to="/notifications" className="Link">
-              <p className="nav-item">
-                <span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faBell} /></span> Notifications
-                {unreadCount > 0 && (
-                  <span className="nav-badge">{unreadCount}</span>
-                )}
-              </p>
-            </Link>
-            <Link to="/profile" className="Link">
-              <p className="nav-item">
-                <span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faUser} /></span> Profile
-              </p>
-            </Link>
-            <Link to="/" className="Link">
-              <p className="nav-item">
-                <span className="nav-icon" aria-hidden="true"><FontAwesomeIcon icon={faGlobe} /></span> Home
-              </p>
-            </Link>
-          </nav>
-
-          <div className="sidebar-actions">
-            <h3>Quick Actions</h3>
-            <Buttons showCreate={true} showPager={false} isAdmin={isAdmin} />
+      <section className="stats">
+        <div className="stat-card stat-total">
+          <div className="stat-card-head">
+            <span className="stat-icon" aria-hidden="true"><FontAwesomeIcon icon={faSquarePlus} /></span>
+            <span className="stat-label">Total Campaigns</span>
           </div>
-        </aside>
+          <b className="stat-number">{stats.total}</b>
+        </div>
+        <div className="stat-card stat-active">
+          <div className="stat-card-head">
+            <span className="stat-icon" aria-hidden="true"><FontAwesomeIcon icon={faCircle} /></span>
+            <span className="stat-label">Active</span>
+          </div>
+          <b className="stat-number">{stats.active}</b>
+        </div>
+        <div className="stat-card stat-completed">
+          <div className="stat-card-head">
+            <span className="stat-icon" aria-hidden="true"><FontAwesomeIcon icon={faSquareCheck} /></span>
+            <span className="stat-label">Completed</span>
+          </div>
+          <b className="stat-number">{stats.completed}</b>
+        </div>
+      </section>
 
-        <main className="main">
-          <header className="header">
-            <div className="header-titles">
-              <h1>Dashboard</h1>
-              <p className="header-sub">Manage and monitor all your campaigns</p>
-            </div>
-            <blockquote className="p-quote">
-              “Alone we can do so little; together we can do so much.”
-            </blockquote>
-          </header>
+      <section className="campaigns-section">
+        <div className="section-head">
+          <h2>{sectionTitle}</h2>
+          <span className="section-count">{campaigns.length}</span>
+        </div>
 
-          <section className="stats">
-            <div className="stat-card stat-total">
-              <div className="stat-card-head">
-                <span className="stat-icon" aria-hidden="true"><FontAwesomeIcon icon={faSquarePlus} /></span>
-                <span className="stat-label">Total Campaigns</span>
-              </div>
-              <b className="stat-number">{stats.total}</b>
-            </div>
-            <div className="stat-card stat-active">
-              <div className="stat-card-head">
-                <span className="stat-icon" aria-hidden="true"><FontAwesomeIcon icon={faCircle} /></span>
-                <span className="stat-label">Active</span>
-              </div>
-              <b className="stat-number">{stats.active}</b>
-            </div>
-            <div className="stat-card stat-completed">
-              <div className="stat-card-head">
-                <span className="stat-icon" aria-hidden="true"><FontAwesomeIcon icon={faSquareCheck} /></span>
-                <span className="stat-label">Completed</span>
-              </div>
-              <b className="stat-number">{stats.completed}</b>
-            </div>
-          </section>
-
-          <section className="campaigns-section">
-            <div className="section-head">
-              <h2>{sectionTitle}</h2>
-              <span className="section-count">{campaigns.length}</span>
-            </div>
-
-            <div className="search-bar">
-              <span className="search-icon" aria-hidden="true">
-                <FontAwesomeIcon icon={faMagnifyingGlass} />
-              </span>
-              <input
-                type="search"
-                className="search-input"
-                placeholder="Search campaigns by name or keyword..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                aria-label="Search campaigns"
-              />
-              {searchTerm && (
-                <button
-                  type="button"
-                  className="search-clear"
-                  onClick={() => setSearchTerm("")}
-                  aria-label="Clear search"
-                >
-                  <FontAwesomeIcon icon={faXmark} />
-                </button>
-              )}
+        <div className="search-row">
+          <div className="search-bar">
+            <span className="search-icon" aria-hidden="true">
+              <FontAwesomeIcon icon={faMagnifyingGlass} />
+            </span>
+            <input
+              type="search"
+              className="search-input"
+              placeholder="Search campaigns by name or keyword..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Search campaigns"
+            />
+            {searchTerm && (
               <button
                 type="button"
-                className={`filter-toggle ${filtersOpen ? "open" : ""}`}
-                onClick={() => setFiltersOpen((v) => !v)}
-                aria-expanded={filtersOpen}
-                aria-controls="filter-panel"
+                className="search-clear"
+                onClick={() => setSearchTerm("")}
+                aria-label="Clear search"
               >
-                <FontAwesomeIcon icon={faFilter} /> Filters
-                {activeFilterCount > 0 && (
-                  <span className="filter-toggle-badge">{activeFilterCount}</span>
-                )}
+                <FontAwesomeIcon icon={faXmark} />
               </button>
-              {searching && <span className="search-status">Searching…</span>}
+            )}
+          </div>
+
+          <button
+            type="button"
+            className={`filter-toggle ${filtersOpen ? "open" : ""}`}
+            onClick={() => setFiltersOpen((v) => !v)}
+            aria-expanded={filtersOpen}
+            aria-controls="filter-panel"
+          >
+            <FontAwesomeIcon icon={faFilter} /> Filters
+            {activeFilterCount > 0 && (
+              <span className="filter-toggle-badge">{activeFilterCount}</span>
+            )}
+          </button>
+
+          {searching && <span className="search-status">Searching…</span>}
+        </div>
+
+        {filtersOpen && (
+          <div className="filter-panel" id="filter-panel">
+            <div className="filter-grid">
+              <label className="filter-field">
+                <span>Category</span>
+                <select
+                  value={filters.categoryId}
+                  onChange={(e) => setFilter("categoryId", e.target.value)}
+                >
+                  <option value="">All categories</option>
+                  {CATEGORIES.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="filter-field">
+                <span>Status</span>
+                <select
+                  value={filters.status}
+                  onChange={(e) => setFilter("status", e.target.value)}
+                >
+                  <option value="">Any status</option>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </label>
+
+              <label className="filter-field">
+                <span>City</span>
+                <input
+                  type="text"
+                  value={filters.city}
+                  onChange={(e) => setFilter("city", e.target.value)}
+                  placeholder="e.g. Mumbai"
+                />
+              </label>
+
+              <label className="filter-field">
+                <span>State</span>
+                <input
+                  type="text"
+                  value={filters.state}
+                  onChange={(e) => setFilter("state", e.target.value)}
+                  placeholder="e.g. Maharashtra"
+                />
+              </label>
+
+              <label className="filter-field">
+                <span>Due by</span>
+                <input
+                  type="date"
+                  value={filters.dueBy}
+                  onChange={(e) => setFilter("dueBy", e.target.value)}
+                />
+              </label>
+
+              <label className="filter-field">
+                <span>Sort by</span>
+                <select
+                  value={filters.sort}
+                  onChange={(e) => setFilter("sort", e.target.value)}
+                >
+                  {SORT_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
 
-            {filtersOpen && (
-              <div className="filter-panel" id="filter-panel">
-                <div className="filter-grid">
-                  <label className="filter-field">
-                    <span>Category</span>
-                    <select
-                      value={filters.categoryId}
-                      onChange={(e) => setFilter("categoryId", e.target.value)}
-                    >
-                      <option value="">All categories</option>
-                      {CATEGORIES.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label className="filter-field">
-                    <span>Status</span>
-                    <select
-                      value={filters.status}
-                      onChange={(e) => setFilter("status", e.target.value)}
-                    >
-                      <option value="">Any status</option>
-                      <option value="active">Active</option>
-                      <option value="completed">Completed</option>
-                    </select>
-                  </label>
-
-                  <label className="filter-field">
-                    <span>City</span>
-                    <input
-                      type="text"
-                      value={filters.city}
-                      onChange={(e) => setFilter("city", e.target.value)}
-                      placeholder="e.g. Mumbai"
-                    />
-                  </label>
-
-                  <label className="filter-field">
-                    <span>State</span>
-                    <input
-                      type="text"
-                      value={filters.state}
-                      onChange={(e) => setFilter("state", e.target.value)}
-                      placeholder="e.g. Maharashtra"
-                    />
-                  </label>
-
-                  <label className="filter-field">
-                    <span>Due by</span>
-                    <input
-                      type="date"
-                      value={filters.dueBy}
-                      onChange={(e) => setFilter("dueBy", e.target.value)}
-                    />
-                  </label>
-                </div>
-
-                {activeFilterCount > 0 && (
-                  <div className="filter-actions">
-                    <span className="filter-count-text">
-                      {activeFilterCount} filter
-                      {activeFilterCount === 1 ? "" : "s"} active
-                    </span>
-                    <button
-                      type="button"
-                      className="filter-clear"
-                      onClick={clearFilters}
-                    >
-                      <FontAwesomeIcon icon={faXmark} /> Clear all
-                    </button>
-                  </div>
-                )}
+            {activeFilterCount > 0 && (
+              <div className="filter-actions">
+                <span className="filter-count-text">
+                  {activeFilterCount} filter
+                  {activeFilterCount === 1 ? "" : "s"} active
+                </span>
+                <button
+                  type="button"
+                  className="filter-clear"
+                  onClick={clearFilters}
+                >
+                  <FontAwesomeIcon icon={faXmark} /> Clear all
+                </button>
               </div>
             )}
-
-            <div className="container">
-              {visibleCampaigns.length > 0 ? (
-                visibleCampaigns.map((c) => (
-                  <CampaignCard
-                    key={c.campaign_id}
-                    campaign_id={c.campaign_id}
-                    name={c.name}
-                    due_date={c.due_date}
-                    status={c.status}
-                  />
-                ))
-              ) : hasSearch ? (
-                <div className="empty">
-                  <p className="empty-title">
-                    No campaigns match "{debouncedSearch}"
-                  </p>
-                  <span>Try a different name or keyword.</span>
-                </div>
-              ) : (
-                <div className="empty">
-                  <p className="empty-title">No campaigns yet</p>
-                  <span>Once campaigns are created, they'll appear here.</span>
-                </div>
-              )}
-            </div>
-          </section>
-
-          <div className="bottom-bar">
-            <Buttons
-              showCreate={false}
-              showPager={true}
-              onNext={handleNext}
-              onPrev={handlePrev}
-            />
           </div>
-        </main>
+        )}
 
-      </div>
-    </div>
+        <div className="container">
+          {visibleCampaigns.length > 0 ? (
+            visibleCampaigns.map((c) => (
+              <CampaignCard
+                key={c.campaign_id}
+                campaign_id={c.campaign_id}
+                name={c.name}
+                due_date={c.due_date}
+                status={c.status}
+              />
+            ))
+          ) : hasSearch ? (
+            <div className="empty">
+              <p className="empty-title">
+                No campaigns match "{debouncedSearch}"
+              </p>
+              <span>Try a different name or keyword.</span>
+            </div>
+          ) : (
+            <div className="empty">
+              <p className="empty-title">No campaigns yet</p>
+              <span>Once campaigns are created, they'll appear here.</span>
+            </div>
+          )}
+        </div>
+
+        {isPreview && campaigns.length > 0 && (
+          <div className="preview-footer">
+            <Link to="/campaigns?view=all" className="view-all-btn">
+              View all campaigns
+              {hiddenCount > 0 && (
+                <span className="view-all-count">+{hiddenCount}</span>
+              )}
+              <FontAwesomeIcon icon={faArrowRight} />
+            </Link>
+          </div>
+        )}
+      </section>
+
+      {!isPreview && (
+        <div className="bottom-bar">
+          <Buttons
+            showCreate={false}
+            showPager={true}
+            onNext={handleNext}
+            onPrev={handlePrev}
+          />
+        </div>
+      )}
+    </main>
   );
 }
 

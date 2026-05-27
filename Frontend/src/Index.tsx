@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import "./index.css";
 import Crousel from "./Crousel";
+import ParticleBackground from "./ParticleBackground";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopyright } from "@fortawesome/free-solid-svg-icons";
 
@@ -20,8 +21,8 @@ function Index() {
         </Link>
 
         <nav className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
+          <NavLink to="/" end>Home</NavLink>
+          <NavLink to="/about">About</NavLink>
         </nav>
 
         <div className="nav-cta">
@@ -35,6 +36,7 @@ function Index() {
       </header>
 
       <section className="hero">
+        <ParticleBackground id="hero-particles" className="hero-particles" />
         <div className="hero-orbs" aria-hidden="true">
           <span className="orb orb-1" />
           <span className="orb orb-2" />
@@ -44,7 +46,7 @@ function Index() {
         <div className="hero-content">
           <span className="hero-eyebrow">Discover. Engage. Impact.</span>
           <h1 className="hero-title">
-            Campaigns <span className="hero-gradient">that matter</span>,
+            Campaigns that <span className="hero-shine" data-shine="matter">matter</span>,
             <br /> people that move.
           </h1>
           <p className="hero-sub">

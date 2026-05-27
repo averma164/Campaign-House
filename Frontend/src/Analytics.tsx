@@ -53,7 +53,7 @@ function Analytics() {
     { name: "Completed", value: stats.completed }
   ];
 
-  const COLORS = ["#7C3AED", "#94A3B8"];
+  const COLORS = ["#7C3AED", "#10B981"];
 
   const completionPct =
     stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;

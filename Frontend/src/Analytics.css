@@ -189,19 +189,19 @@
 .progress-value {
   font-family: var(--font-display);
   font-weight: 700;
-  color: var(--brand-800);
+  color: #047857;
 }
 
 .progress-bar {
   height: 10px;
-  background: var(--brand-100);
+  background: #D1FAE5;
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--brand-gradient);
+  background: linear-gradient(135deg, #34D399, #10B981);
   border-radius: var(--radius-pill);
   transition: width var(--t-slow) var(--ease);
 }

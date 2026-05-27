@@ -45,15 +45,19 @@ def read_campaigns(
     city: str | None = Query(None, description="Filter by city (partial, case-insensitive)"),
     due_by: datetime | None = Query(None, description="Only campaigns due on or before this datetime"),
     status: str | None = Query(None, description="Filter by computed status: 'active' or 'completed'"),
+    sort: str | None = Query(
+        None,
+        description="Sort order: 'oldest' (default) | 'latest' | 'due_date' | 'name'",
+    ),
     user: User = Depends(get_current_user)
 ):
     cursor_id = decode_cursor(cursor) if cursor else 0
     now = datetime.now()
 
-    stmt = (
-        select(Campaign)
-        .where(Campaign.campaign_id > cursor_id)
-    )
+    sort_key = (sort or "oldest").lower().strip()
+    stmt = select(Campaign)
+    if sort_key == "oldest":
+        stmt = stmt.where(Campaign.campaign_id > cursor_id)
 
     
     if q:
@@ -84,7 +88,19 @@ def read_campaigns(
             stmt = stmt.where(Campaign.due_date.is_not(None))
             stmt = stmt.where(Campaign.due_date <= now)
 
-    stmt = stmt.order_by(Campaign.campaign_id).limit(limit + 1)
+    if sort_key == "latest":
+        stmt = stmt.order_by(Campaign.campaign_id.desc())
+    elif sort_key == "due_date":
+        stmt = stmt.order_by(
+            Campaign.due_date.asc().nullslast(),
+            Campaign.campaign_id,
+        )
+    elif sort_key == "name":
+        stmt = stmt.order_by(Campaign.name.asc(), Campaign.campaign_id)
+    else: 
+        stmt = stmt.order_by(Campaign.campaign_id)
+
+    stmt = stmt.limit(limit + 1)
     data = session.exec(stmt).all()
     for c in data:
         if c.due_date and c.due_date < now:
@@ -95,7 +111,8 @@ def read_campaigns(
     base_url = str(request.url).split("?")[0]
     next_url = None
 
-    if len(data) > limit:
+   
+    if sort_key == "oldest" and len(data) > limit:
         from urllib.parse import quote_plus
         next_cursor = encode_cursor(data[:limit][-1].campaign_id)
         parts = [f"cursor={next_cursor}", f"limit={limit}"]

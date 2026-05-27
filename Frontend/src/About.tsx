@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./About.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHandshakeSimple, faStar, faStarHalfStroke, faTools } from "@fortawesome/free-solid-svg-icons";
 
 function About() {
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ function About() {
       <div className="about-content">
 
         <article className="about-section">
-          <div className="about-section-icon" aria-hidden="true">🎯</div>
+          <div className="about-section-icon" aria-hidden="true"><FontAwesomeIcon icon={faHandshakeSimple} /></div>
           <div className="about-section-body">
             <h2>Our Mission</h2>
             <p>
@@ -33,7 +35,7 @@ function About() {
         </article>
 
         <article className="about-section">
-          <div className="about-section-icon" aria-hidden="true">🛠️</div>
+          <div className="about-section-icon" aria-hidden="true"><FontAwesomeIcon icon={faTools} /></div>
           <div className="about-section-body">
             <h2>What We Do</h2>
             <p>
@@ -45,7 +47,7 @@ function About() {
         </article>
 
         <article className="about-section">
-          <div className="about-section-icon" aria-hidden="true">✨</div>
+          <div className="about-section-icon" aria-hidden="true"><FontAwesomeIcon icon={faStarHalfStroke} /></div>
           <div className="about-section-body">
             <h2>Why Choose Us?</h2>
             <ul>
