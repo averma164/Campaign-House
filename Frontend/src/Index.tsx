@@ -55,7 +55,7 @@ function Index() {
 
           <div className="hero-actions">
             <Link to="/signup">
-              <button className="btn-primary btn-lg">Get Started</button>
+              <button className="btn-ghost btn-lg">Get Started</button>
             </Link>
             <Link to="/about">
               <button className="btn-ghost btn-lg">Learn more</button>

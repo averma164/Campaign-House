@@ -106,7 +106,6 @@
   transform: translateX(0);
 }
 
-/* NAV — every item is a button (icon by default, label appears when expanded) */
 .shell-nav {
   display: flex;
   flex-direction: column;
@@ -204,7 +203,6 @@
   box-shadow: 0 4px 10px rgba(239, 68, 68, 0.5);
 }
 
-/* When sidebar is collapsed, badge becomes a small dot anchored top-right of the icon */
 .shell-collapsed .shell-nav-badge {
   position: absolute;
   top: 4px;
@@ -217,7 +215,6 @@
   border: 2px solid #2A1A57;
 }
 
-/* MAIN AREA — pushed to the right of the sidebar */
 .shell-main {
   position: relative;
   margin-left: var(--shell-sidebar-width);
@@ -229,7 +226,6 @@
   position: relative;
 }
 
-/* QUICK ACTIONS — floating on top-right of every page */
 .shell-quick-actions {
   position: fixed;
   top: 18px;

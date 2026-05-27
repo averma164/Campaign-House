@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import "./CreateCampaign.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarDays, faHashtag, faLeftLong, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUpRightFromSquare, faCalendarDays, faHashtag, faLeftLong, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Alert, { type AlertColor } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import Dialog from "@mui/material/Dialog";
@@ -23,6 +23,7 @@ function ShowCampaign() {
     description?: string;
     owner_id?: number;
     poster_image?: string;
+    origin_page_url?: string | null;
   } | null>(null);
 
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
@@ -122,6 +123,20 @@ function ShowCampaign() {
     }
   };
   
+  const normalizeUrl = (raw: string) => {
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  };
+
+  const prettyHost = (url: string) => {
+    try {
+      return new URL(url).hostname.replace(/^www\./, "");
+    } catch {
+      return url;
+    }
+  };
+
   const getStatus = () => {
     if (!campaign) return "ACTIVE";
 
@@ -205,6 +220,29 @@ return (
                 {campaign.description ? campaign.description : "Never doubt that a small group of thoughtful, committed citizens can change the world. — Margaret Mead"}
               </p>
             </div>
+
+            {/* ORIGIN URL */}
+            {campaign.origin_page_url &&
+              (() => {
+                const href = normalizeUrl(campaign.origin_page_url);
+                if (!href) return null;
+                return (
+                  <div className="origin-link-box">
+                    <p className="desc-label">Source:</p>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="origin-link"
+                    >
+                      <span className="origin-link-host">
+                        {prettyHost(href)}
+                      </span>
+                      <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                    </a>
+                  </div>
+                );
+              })()}
 
             {/* ACTION BUTTONS */}
             <div className="action-buttons">

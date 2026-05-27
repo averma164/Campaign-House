@@ -56,7 +56,6 @@ function PosterImageUpload({ value, onChange, disabled }: Props) {
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) void handleFile(file);
-    // Allow picking the same file twice in a row.
     e.target.value = "";
   };
 
