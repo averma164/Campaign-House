@@ -215,7 +215,7 @@ Signup:-
 <img width="1918" height="913" alt="image" src="https://github.com/user-attachments/assets/89e570f3-eb55-434e-aa7c-845b94be37e7" />
 Create :-
 <img width="1918" height="907" alt="image" src="https://github.com/user-attachments/assets/2d17ea11-86d3-41cb-ae53-6dd9a041b988" />
-<img width="1918" height="903" alt="image" src="https://github.com/user-attachments/assets/a1e720f8-f9c1-4993-b63f-8957da399109" />
+<img width="1912" height="907" alt="image" src="https://github.com/user-attachments/assets/f427fc96-414a-4cb8-9ba1-78ddc4474a47" />
 Notifications:
 <img width="1918" height="902" alt="image" src="https://github.com/user-attachments/assets/9bf65e40-215e-49af-a240-de658b62147f" />
 About:-
